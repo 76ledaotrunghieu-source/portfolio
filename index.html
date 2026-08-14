@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Lê Đào Trung Hiếu | Portfolio</title>
+
+<style>
+:root {
+    --blue: #0878d1;
+    --dark-blue: #063b68;
+    --light-blue: #eaf6ff;
+    --white: #ffffff;
+    --text: #102a43;
+    --gray: #627d98;
+    --line: #cfe8fa;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: white;
+    color: var(--text);
+    line-height: 1.6;
+}
+
+/* =========================
+   NAVIGATION
+========================= */
+
+nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 70px;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0 7%;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--dark-blue);
+}
+
+.logo span {
+    color: var(--blue);
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 600;
+    transition: .3s;
+}
+
+nav a:hover {
+    color: var(--blue);
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+    min-height: 100vh;
+    padding: 140px 8% 80px;
+
+    display: flex;
+    align-items: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff 0%,
+            #f4fbff 60%,
+            #e5f5ff 100%
+        );
+
+    position: relative;
+    overflow: hidden;
+}
+
+.circuit {
+    position: absolute;
+    height: 1px;
+    background: var(--blue);
+    opacity: .25;
+}
+
+.circuit::after {
+    content: "";
+    position: absolute;
+
+    width: 7px;
+    height: 7px;
+
+    border: 2px solid var(--blue);
+    border-radius: 50%;
+
+    right: -5px;
+    top: -4px;
+
+    background: white;
+}
+
+.c1 {
+    width: 300px;
+    right: 5%;
+    top: 25%;
+}
+
+.c2 {
+    width: 220px;
+    right: 18%;
+    top: 70%;
+}
+
+.c3 {
+    width: 180px;
+    left: 3%;
+    top: 35%;
+}
+
+.c4 {
+    width: 260px;
+    left: 20%;
+    top: 82%;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+}
+
+.eyebrow {
+    color: var(--blue);
+    font-weight: 700;
+    letter-spacing: 3px;
+    font-size: .85rem;
+    margin-bottom: 15px;
+}
+
+.hero h1 {
+    font-size: clamp(3rem, 7vw, 6.5rem);
+    line-height: .95;
+    color: var(--dark-blue);
+    margin-bottom: 25px;
+}
+
+.hero h1 span {
+    color: var(--blue);
+}
+
+.hero-description {
+    font-size: 1.15rem;
+    color: var(--gray);
+    max-width: 650px;
+    margin-bottom: 35px;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(200px,1fr));
+    gap: 12px 30px;
+    max-width: 650px;
+}
+
+.contact-item {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.contact-label {
+    color: var(--blue);
+    font-size: .7rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.contact-value {
+    font-size: .95rem;
+}
+
+.linkedin-empty {
+    color: #9db3c5;
+    font-style: italic;
+}
+
+
+/* =========================
+   SECTIONS
+========================= */
+
+section {
+    padding: 110px 8%;
+}
+
+.section-number {
+    color: var(--blue);
+    font-size: .8rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+}
+
+.section-title {
+    font-size: clamp(2.2rem,5vw,4rem);
+    color: var(--dark-blue);
+    line-height: 1;
+    margin-top: 10px;
+}
+
+.section-subtitle {
+    color: var(--gray);
+    margin-top: 15px;
+    max-width: 600px;
+}
+
+.section-header {
+    margin-bottom: 60px;
+}
+
+
+/* =========================
+   ACADEMIC
+========================= */
+
+.academic {
+    background: #f7fcff;
+}
+
+.academic-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 40px;
+}
+
+.academic-card {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 35px;
+
+    box-shadow:
+        0 15px 45px rgba(8,120,209,.07);
+
+    transition: .3s;
+}
+
+.academic-card:hover {
+    transform: translateY(-5px);
+}
+
+.academic-card h3 {
+    color: var(--dark-blue);
+    font-size: 1.4rem;
+}
+
+.school-year {
+    color: var(--blue);
+    font-weight: 700;
+    margin: 8px 0 25px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 15px;
+}
+
+.stat {
+    background: var(--light-blue);
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.stat-number {
+    color: var(--blue);
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.stat-label {
+    color: var(--gray);
+    font-size: .8rem;
+}
+
+
+/* =========================
+   ACTIVITIES
+========================= */
+
+.activities {
+    background: white;
+}
+
+.activity-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+
+    margin-bottom: 140px;
+}
+
+
+/* =========================
+   CIRCULAR MENU
+========================= */
+
+.activity-wheel {
+    width: min(500px,90vw);
+    height: min(500px,90vw);
+
+    position: relative;
+
+    margin: auto;
+
+    border-radius: 50%;
+
+    border: 1px solid var(--line);
+
+    background:
+        radial-gradient(
+            circle,
+            white 0 28%,
+            #f1faff 29% 55%,
+            white 56%
+        );
+}
+
+.activity-wheel::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 14%;
+
+    border: 1px dashed #9dd2f5;
+
+    border-radius: 50%;
+}
+
+
+/* Center */
+
+.center {
+    position: absolute;
+
+    width: 110px;
+    height: 110px;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%,-50%);
+
+    border-radius: 50%;
+
+    background: var(--dark-blue);
+
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.8rem;
+    font-weight: 800;
+
+    box-shadow:
+        0 0 0 10px #e1f3ff,
+        0 0 35px rgba(8,120,209,.25);
+
+    z-index: 2;
+}
+
+
+/* Nodes */
+
+.activity-node {
+    position: absolute;
+
+    width: 100px;
+    height: 100px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    border: 2px solid var(--blue);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    padding: 10px;
+
+    color: var(--dark-blue);
+
+    font-size: .72rem;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform .35s,
+        background .35s,
+        color .35s,
+        box-shadow .35s;
+
+    box-shadow:
+        0 8px 25px rgba(8,120,209,.12);
+
+    z-index: 3;
+}
+
+.activity-node:hover,
+.activity-node.active {
+    background: var(--blue);
+    color: white;
+
+    box-shadow:
+        0 12px 35px rgba(8,120,209,.3);
+
+    transform: scale(1.15);
+}
+
+
+/* Node positions */
+
+.node1 {
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.node2 {
+    top: 20%;
+    right: -20px;
+}
+
+.node3 {
+    bottom: 5%;
+    right: 7%;
+}
+
+.node4 {
+    bottom: 5%;
+    left: 7%;
+}
+
+.node5 {
+    top: 20%;
+    left: -20px;
+}
+
+
+/* =========================
+   INFO PANEL
+========================= */
+
+.activity-info {
+    min-height: 380px;
+
+    border-left: 3px solid var(--blue);
+
+    padding: 35px 40px;
+
+    background: #f7fcff;
+
+    border-radius: 0 20px 20px 0;
+
+    transition: opacity .2s;
+}
+
+.activity-info h3 {
+    color: var(--dark-blue);
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.activity-category {
+    color: var(--blue);
+    font-size: .75rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+
+    margin-bottom: 20px;
+}
+
+.activity-description {
+    color: var(--gray);
+    margin-bottom: 25px;
+}
+
+.activity-image {
+    width: 100%;
+    height: 190px;
+
+    object-fit: cover;
+
+    border-radius: 12px;
+
+    display: none;
+}
+
+.image-placeholder {
+    width: 100%;
+    height: 190px;
+
+    border: 2px dashed #9bcfee;
+
+    border-radius: 12px;
+
+    background: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    color: #7ca8c4;
+}
+
+
+/* =========================
+   HOBBIES
+========================= */
+
+.hobbies {
+    min-height: 400px;
+
+    background: var(--dark-blue);
+
+    color: white;
+}
+
+.hobbies .section-number {
+    color: #66c5ff;
+}
+
+.hobbies .section-title {
+    color: white;
+}
+
+.hobbies-placeholder {
+    margin-top: 30px;
+
+    height: 130px;
+
+    border: 1px dashed rgba(255,255,255,.4);
+
+    border-radius: 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: rgba(255,255,255,.5);
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+    background: #032b4c;
+    color: #9fc5dd;
+
+    text-align: center;
+
+    padding: 30px;
+
+    font-size: .8rem;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:900px) {
+
+    nav ul {
+        display: none;
+    }
+
+    .academic-grid,
+    .activity-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .activity-info {
+        border-left: none;
+        border-top: 3px solid var(--blue);
+        border-radius: 0 0 20px 20px;
+    }
+}
+
+
+@media(max-width:600px) {
+
+    section {
+        padding: 80px 6%;
+    }
+
+    .hero {
+        padding: 120px 6% 70px;
+    }
+
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .activity-node {
+        width: 80px;
+        height: 80px;
+        font-size: .6rem;
+    }
+
+    .center {
+        width: 80px;
+        height: 80px;
+        font-size: 1.3rem;
+    }
+
+    .node2,
+    .node5 {
+        right: -5px;
+    }
+
+    .node5 {
+        left: -5px;
+    }
+}
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     NAV
+========================= -->
+
+<nav>
+
+    <div class="logo">
+        HIẾU<span>.</span>
+    </div>
+
+    <ul>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#academic">Academic</a></li>
+        <li><a href="#activities">Activities</a></li>
+        <li><a href="#hobbies">Hobbies</a></li>
+    </ul>
+
+</nav>
+
+
+<!-- =========================
+     OVERVIEW
+========================= -->
+
+<section class="hero" id="overview">
+
+    <div class="circuit c1"></div>
+    <div class="circuit c2"></div>
+    <div class="circuit c3"></div>
+    <div class="circuit c4"></div>
+
+    <div class="hero-content">
+
+        <div class="eyebrow">
+            ELECTRICAL ENGINEERING • PORTFOLIO
+        </div>
+
+        <h1>
+            Lê Đào<br>
+            Trung <span>Hiếu</span>
+        </h1>
+
+        <p class="hero-description">
+            Student from Ho Chi Minh City, Vietnam, with a strong interest
+            in Electrical Engineering, mathematics, technology and innovation.
+        </p>
+
+        <div class="contact-grid">
+
+            <div class="contact-item">
+                <div class="contact-label">Location</div>
+                <div class="contact-value">
+                    Ho Chi Minh City, Vietnam
+                </div>
+            </div>
+
+            <div class="contact-item">
+                <div class="contact-label">Email</div>
+                <div class="contact-value">
+                    76ledaotrunghieu@gmail.com
+                </div>
+            </div>
+
+            <div class="contact-item">
+                <div class="contact-label">Phone</div>
+                <div class="contact-value">
+                    0989415751
+                </div>
+            </div>
+
+            <!-- LinkedIn placeholders -->
+
+            <div class="contact-item">
+                <div class="contact-label">LinkedIn</div>
+                <div class="contact-value linkedin-empty">
+                    __________________________
+                </div>
+            </div>
+
+            <div class="contact-item">
+                <div class="contact-label">LinkedIn</div>
+                <div class="contact-value linkedin-empty">
+                    __________________________
+                </div>
+            </div>
+
+            <div class="contact-item">
+                <div class="contact-label">LinkedIn</div>
+                <div class="contact-value linkedin-empty">
+                    __________________________
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     ACADEMIC
+========================= -->
+
+<section class="academic" id="academic">
+
+    <div class="section-header">
+
+        <div class="section-number">
+            01 / ACADEMIC
+        </div>
+
+        <h2 class="section-title">
+            Academic<br>
+            Background
+        </h2>
+
+        <p class="section-subtitle">
+            Academic achievements and educational background.
+        </p>
+
+    </div>
+
+
+    <div class="academic-grid">
+
+        <div class="academic-card">
+
+            <h3>
+                THPT Nguyễn Thượng Hiền
+            </h3>
+
+            <div class="school-year">
+                2024 — 2027
+            </div>
+
+            <p>
+                Ho Chi Minh City, Vietnam
+            </p>
+
+        </div>
+
+
+        <div class="academic-card">
+
+            <h3>
+                Academic Performance
+            </h3>
+
+            <br>
+
+            <div class="stats">
+
+                <div class="stat">
+                    <div class="stat-number">9.0</div>
+                    <div class="stat-label">
+                        Grade 10 GPA
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-number">9.4</div>
+                    <div class="stat-label">
+                        Grade 11 GPA
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-number">7.5</div>
+                    <div class="stat-label">
+                        IELTS
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-number">1450</div>
+                    <div class="stat-label">
+                        SAT
+                    </div>
+                </div>
+
+            </div>
+
+            <br>
+
+            <p>
+                <strong>SAT:</strong>
+                670 Verbal · 780 Math
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     ACTIVITIES
+========================= -->
+
+<section class="activities" id="activities">
+
+
+    <!-- =========================
+         ACADEMIC ACTIVITIES
+    ========================= -->
+
+    <div class="section-header">
+
+        <div class="section-number">
+            02 / ACADEMIC ACTIVITIES
+        </div>
+
+        <h2 class="section-title">
+            Academic<br>
+            Extracurriculars
+        </h2>
+
+        <p class="section-subtitle">
+            Hover over an activity to explore more.
+        </p>
+
+    </div>
+
+
+    <div class="activity-wrapper">
+
+
+        <!-- CIRCLE -->
+
+        <div class="activity-wheel">
+
+            <div class="center">
+                EE
+            </div>
+
+            <div
+                class="activity-node node1 active"
+                data-title="Grand Final List of International Applied Mathematics Olympiad"
+                data-category="Academic Competition"
+                data-description="Add your description, achievement, ranking and personal experience here."
+                data-image=""
+            >
+                Mathematics<br>
+                Olympiad
+            </div>
+
+
+            <div
+                class="activity-node node2"
+                data-title="Samsung Solve for Tomorrow 2026"
+                data-category="Innovation / Technology"
+                data-description="Add your description, project details, role and achievements here."
+                data-image=""
+            >
+                Samsung<br>
+                Solve for Tomorrow
+            </div>
+
+
+            <div
+                class="activity-node node3"
+                data-title="KAIST's Introduction to Devices"
+                data-category="Electrical Engineering"
+                data-description="Completed KAIST's Introduction to Devices course. Add more details here."
+                data-image=""
+            >
+                KAIST<br>
+                Devices
+            </div>
+
+
+            <div
+                class="activity-node node4"
+                data-title="Microsoft's Introductory Programming Course"
+                data-category="Programming"
+                data-description="Completed Microsoft's introductory programming course. Add more details here."
+                data-image=""
+            >
+                Microsoft<br>
+                Programming
+            </div>
+
+
+            <div
+                class="activity-node node5"
+                data-title="UNESCO Today: The Voice"
+                data-category="Academic / Communication"
+                data-description="Add your participation details, role and experience here."
+                data-image=""
+            >
+                UNESCO<br>
+                Today
+            </div>
+
+        </div>
+
+
+        <!-- INFO -->
+
+        <div class="activity-info">
+
+            <div class="activity-category" id="activity-category">
+                Academic Competition
+            </div>
+
+            <h3 id="activity-title">
+                Grand Final List of International Applied Mathematics Olympiad
+            </h3>
+
+            <p
+                class="activity-description"
+                id="activity-description"
+            >
+                Add your description, achievement, ranking and personal
+                experience here.
+            </p>
+
+
+            <div
+                class="image-placeholder"
+                id="image-placeholder"
+            >
+                📷<br>
+                Add activity image here
+            </div>
+
+            <img
+                class="activity-image"
+                id="activity-image"
+                alt="Activity image"
+            >
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         COMMUNITY
+    ========================= -->
+
+    <div class="section-header">
+
+        <div class="section-number">
+            03 / COMMUNITY
+        </div>
+
+        <h2 class="section-title">
+            Community<br>
+            Activities
+        </h2>
+
+        <p class="section-subtitle">
+            Volunteering, social impact and community involvement.
+        </p>
+
+    </div>
+
+
+    <div class="activity-wrapper">
+
+
+        <div class="activity-wheel">
+
+            <div class="center">
+                +
+            </div>
+
+
+            <div
+                class="activity-node node1 active"
+                data-title="Hoa Phuong Do (Red Flamboyant) Volunteer Campaign"
+                data-category="Community Service"
+                data-description="Add your role, responsibilities and contribution to the campaign here."
+                data-image=""
+            >
+                Hoa Phuong Do<br>
+                Volunteer
+            </div>
+
+
+            <div
+                class="activity-node node2"
+                data-title="Maersk Marathon to Raise Fund for Community Work"
+                data-category="Fundraising / Community"
+                data-description="Add your participation, fundraising purpose and experience here."
+                data-image=""
+            >
+                Maersk<br>
+                Marathon
+            </div>
+
+
+            <div
+                class="activity-node node3"
+                data-title="Overseas Study Seminar"
+                data-category="Education"
+                data-description="Add your role and experience from the overseas study seminar here."
+                data-image=""
+            >
+                Overseas Study<br>
+                Seminar
+            </div>
+
+
+            <div
+                class="activity-node node4"
+                data-title="Your Next Activity"
+                data-category="Community"
+                data-description="This is an empty slot. Replace it with another activity."
+                data-image=""
+            >
+                ADD<br>
+                ACTIVITY
+            </div>
+
+        </div>
+
+
+        <div class="activity-info">
+
+            <div class="activity-category">
+                Community Service
+            </div>
+
+            <h3>
+                Hoa Phuong Do (Red Flamboyant) Volunteer Campaign
+            </h3>
+
+            <p>
+                Add your role, responsibilities and contribution
+                to the campaign here.
+            </p>
+
+            <div class="image-placeholder">
+                📷<br>
+                Add activity image here
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         OTHER ACTIVITIES
+    ========================= -->
+
+    <div class="section-header">
+
+        <div class="section-number">
+            04 / OTHER ACTIVITIES
+        </div>
+
+        <h2 class="section-title">
+            Beyond<br>
+            Academics
+        </h2>
+
+    </div>
+
+
+    <div class="activity-wrapper">
+
+
+        <div class="activity-wheel">
+
+            <div class="center">
+                ✦
+            </div>
+
+
+            <div
+                class="activity-node node1 active"
+                data-title="Cheerleading"
+                data-category="Performing Arts / School Life"
+                data-description="Add your role, achievements and experience in cheerleading here."
+                data-image=""
+            >
+                Cheerleading
+            </div>
+
+
+            <div
+                class="activity-node node3"
+                data-title="Dance"
+                data-category="Performing Arts"
+                data-description="Add your dance activities, performances and achievements here."
+                data-image=""
+            >
+                Dance
+            </div>
+
+
+            <div
+                class="activity-node node5"
+                data-title="School Spirit"
+                data-category="School Activities"
+                data-description="Add your participation and contributions to school spirit activities here."
+                data-image=""
+            >
+                School<br>
+                Spirit
+            </div>
+
+        </div>
+
+
+        <div class="activity-info">
+
+            <div class="activity-category">
+                Performing Arts / School Life
+            </div>
+
+            <h3>
+                Cheerleading
+            </h3>
+
+            <p>
+                Add your role, achievements and experience
+                in cheerleading here.
+            </p>
+
+            <div class="image-placeholder">
+                📷<br>
+                Add activity image here
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     HOBBIES
+========================= -->
+
+<section class="hobbies" id="hobbies">
+
+    <div>
+
+        <div class="section-number">
+            05 / HOBBIES
+        </div>
+
+        <h2 class="section-title">
+            Hobbies
+        </h2>
+
+        <div class="hobbies-placeholder">
+            Your hobbies will go here.
+        </div>
+
+    </div>
+
+</section>
+
+
+<footer>
+    © 2026 Lê Đào Trung Hiếu · Electrical Engineering Portfolio
+</footer>
+
+
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
+<script>
+
+document.querySelectorAll(".activity-wheel").forEach(wheel => {
+
+    const nodes = wheel.querySelectorAll(".activity-node");
+
+    /*
+        Tìm info panel gần wheel nhất
+    */
+
+    const wrapper = wheel.closest(".activity-wrapper");
+
+    const title =
+        wrapper.querySelector("#activity-title") ||
+        wrapper.querySelector(".activity-info h3");
+
+    const category =
+        wrapper.querySelector("#activity-category") ||
+        wrapper.querySelector(".activity-category");
+
+    const description =
+        wrapper.querySelector("#activity-description") ||
+        wrapper.querySelector(".activity-description");
+
+    const placeholder =
+        wrapper.querySelector("#image-placeholder") ||
+        wrapper.querySelector(".image-placeholder");
+
+    const image =
+        wrapper.querySelector("#activity-image") ||
+        wrapper.querySelector(".activity-image");
+
+
+    nodes.forEach(node => {
+
+        node.addEventListener("mouseenter", () => {
+
+            /*
+                Remove active state
+                from every node
+            */
+
+            nodes.forEach(n => {
+                n.classList.remove("active");
+            });
+
+            node.classList.add("active");
+
+
+            /*
+                Get data
+            */
+
+            const newTitle =
+                node.dataset.title;
+
+            const newCategory =
+                node.dataset.category;
+
+            const newDescription =
+                node.dataset.description;
+
+            const newImage =
+                node.dataset.image;
+
+
+            /*
+                Update text
+            */
+
+            title.textContent = newTitle;
+
+            category.textContent =
+                newCategory;
+
+            description.textContent =
+                newDescription;
+
+
+            /*
+                Update image
+            */
+
+            if (newImage && newImage.trim() !== "") {
+
+                image.src = newImage;
+
+                image.style.display =
+                    "block";
+
+                placeholder.style.display =
+                    "none";
+
+            } else {
+
+                image.style.display =
+                    "none";
+
+                placeholder.style.display =
+                    "flex";
+            }
+
+        });
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>
