@@ -1,837 +1,502 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Le Dao Trung Hieu — Portfolio</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Dao Trung Hieu — Interactive Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        bg: '#050506',
+                        panel: '#111113',
+                        border: '#2a2a2d',
+                        accent: '#4c4c50'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: theme('colors.bg');
+            color: white;
+            overflow: hidden; /* Prevent scrolling, app-like feel */
+        }
+        
+        .wheel-container {
+            transition: all 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        
+        /* Layout States */
+        .layout-centered .wheel-container {
+            transform: translateX(0) scale(1);
+        }
+        
+        .layout-shifted .wheel-container {
+            /* Shrinks and moves to the left */
+            transform: translateX(-20vw) scale(0.85);
+        }
 
-<!--
-  HƯỚNG DẪN NHANH (đọc trước khi deploy lên GitHub Pages)
-  ---------------------------------------------------------
-  1) File này là 1 file HTML độc lập, copy nguyên thành index.html trong repo
-     GitHub Pages là chạy được ngay.
-  2) Mỗi thành tích có 1 khung ảnh trống dạng:
-        <div class="img-slot"><span>+ image</span></div>
-     nằm bên trong 1 thẻ <template class="orbit-data"> ngay phía dưới thẻ đó.
-     Muốn thêm ảnh, xoá TOÀN BỘ div.img-slot đó và thay bằng:
-        <img src="images/ten-anh.jpg" alt="Mô tả ảnh">
-     rồi tạo thư mục "images/" trong repo và bỏ ảnh vào. Dùng Ctrl+F tìm
-     "img-slot" để thấy hết các chỗ cần sửa.
-  3) Mỗi mục lớn là một "vòng quỹ đạo": tên mục ở tâm, các thành tích là thẻ
-     nhỏ quay chậm xung quanh. Hover (chạm trên mobile) vào 1 thẻ → vòng quay
-     dừng lại, cả cụm vòng tròn dời sang trái, nhường 1 khung cố định bên
-     phải để hiện mô tả đầy đủ + ảnh (khung này không bao giờ tràn màn hình).
-  4) Muốn đổi tốc độ quay, sửa số trong style="--dur:36s" ở từng
-     <div class="orbit-wrap">. Muốn đổi chiều quay, thêm/bớt class "reverse".
--->
+        .detail-panel {
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        .layout-centered .detail-panel {
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
 
-<style>
-  :root{
-    --bg:#050506;
-    --bg-alt:#0c0c0e;
-    --panel:#111113;
-    --line:#2a2a2d;
-    --line-bright:#4c4c50;
-    --text:#f2f2f2;
-    --text-dim:#9a9a9e;
-    --text-faint:#616166;
-    --white:#ffffff;
-    --mono:'JetBrains Mono', monospace;
-    --sans:'Inter', sans-serif;
-  }
+        .layout-shifted .detail-panel {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
 
-  *{ box-sizing:border-box; }
-  html{ scroll-behavior:smooth; }
+        /* SVG Wheel Animation */
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .spin-slow {
+            animation: spin 45s linear infinite;
+            transform-origin: center;
+        }
 
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--text);
-    font-family:var(--sans);
-    line-height:1.55;
-    -webkit-font-smoothing:antialiased;
-    overflow-x:hidden;
-  }
+        /* Segment Hover Effects */
+        .wheel-segment {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            transform-origin: center;
+        }
 
-  .circuit-bg{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.5; }
-  .circuit-bg svg{ width:100%; height:100%; }
+        .wheel-segment:hover {
+            filter: brightness(1.3);
+            /* Slightly scale up the hovered segment */
+            transform: scale(1.02);
+        }
 
-  .page{ position:relative; z-index:1; }
-  .wrap{ max-width:1080px; margin:0 auto; padding:0 1.75rem; }
-
-  header.hero{ padding:5.5rem 0 4rem; }
-
-  .chip{
-    position:relative; max-width:720px; margin:0 auto;
-    border:1.5px solid var(--line-bright); border-radius:6px;
-    background:var(--bg-alt); padding:3.25rem 2.5rem 2.75rem; text-align:center;
-  }
-  .chip::before{
-    content:""; position:absolute; top:-11px; left:50%; transform:translateX(-50%);
-    width:22px; height:22px; background:var(--bg);
-    border-left:1.5px solid var(--line-bright); border-bottom:1.5px solid var(--line-bright);
-    border-radius:0 0 0 22px;
-  }
-  .chip .pinrow{ position:absolute; left:14px; right:14px; display:flex; justify-content:space-between; pointer-events:none; }
-  .chip .pinrow.top{ top:-6px; }
-  .chip .pinrow.bottom{ bottom:-6px; }
-  .chip .pinrow span{ width:2px; height:6px; background:var(--line-bright); }
-
-  .eyebrow-tag{ font-family:var(--mono); font-size:0.72rem; letter-spacing:0.14em; color:var(--text-faint); margin-bottom:1.1rem; }
-  h1.name{ font-family:var(--mono); font-weight:700; font-size:clamp(1.7rem, 4.4vw, 2.6rem); letter-spacing:0.03em; margin:0 0 0.9rem; color:var(--white); }
-  .tagline{ max-width:52ch; margin:0 auto 2rem; color:var(--text-dim); font-size:0.98rem; }
-  .pins-contact{ display:flex; flex-wrap:wrap; justify-content:center; gap:1.6rem; }
-  .pin-item{ font-family:var(--mono); font-size:0.82rem; color:var(--text-dim); padding-top:0.6rem; border-top:1.5px solid var(--line-bright); min-width:100px; }
-  .pin-item b{ display:block; font-family:var(--sans); font-weight:500; color:var(--text); font-size:0.86rem; margin-top:0.2rem; }
-
-  section.block{ padding:4.5rem 0; border-top:1px solid var(--line); }
-
-  /* ---------- stage: orbit + side detail panel ---------- */
-  .orbit-stage{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-wrap:nowrap;
-    width:100%;
-  }
-
-  .orbit-wrap{
-    position:relative;
-    flex:none;
-    --scale:1;
-    width:calc((var(--radius) * var(--scale) + var(--chip-r)) * 2);
-    height:calc((var(--radius) * var(--scale) + var(--chip-r)) * 2);
-    transition:margin .4s ease;
-  }
-
-  .orbit-wrap::before{
-    content:"";
-    position:absolute; top:50%; left:50%;
-    width:calc(var(--radius) * var(--scale) * 2);
-    height:calc(var(--radius) * var(--scale) * 2);
-    transform:translate(-50%,-50%);
-    border:1px dashed var(--line);
-    border-radius:50%;
-    pointer-events:none;
-  }
-
-  .orbit-center{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:150px; text-align:center; pointer-events:none; z-index:1; }
-  .orbit-center h2{ font-family:var(--mono); font-weight:500; font-size:0.98rem; letter-spacing:0.04em; color:var(--white); margin:0; line-height:1.35; }
-  .orbit-center span{ display:block; margin-top:0.4rem; font-family:var(--mono); font-size:0.66rem; color:var(--text-faint); letter-spacing:0.08em; }
-
-  .orbit-ring{ position:absolute; inset:0; animation:orbit-spin var(--dur) linear infinite; }
-  .orbit-wrap.reverse .orbit-ring{ animation-direction:reverse; }
-
-  .orbit-ring:has(.orbit-card.active){ animation-play-state:paused; }
-  .orbit-ring:has(.orbit-card.active) .orbit-counter{ animation-play-state:paused; }
-
-  @keyframes orbit-spin{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
-
-  .orbit-item{ position:absolute; top:50%; left:50%; transform-origin:0 0; transform:rotate(var(--angle)) translateX(calc(var(--radius) * var(--scale))); }
-
-  .orbit-counter{ position:absolute; top:0; left:0; animation:counter-spin var(--dur) linear infinite; }
-  .orbit-wrap.reverse .orbit-counter{ animation-direction:reverse; }
-
-  @keyframes counter-spin{
-    from{ transform:translate(-50%,-50%) rotate(calc(-1 * var(--angle))); }
-    to{ transform:translate(-50%,-50%) rotate(calc(-1 * var(--angle) - 360deg)); }
-  }
-
-  .orbit-card{
-    position:relative;
-    width:var(--chip-w);
-    padding:0.55rem 0.85rem;
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:20px;
-    text-align:center;
-    cursor:pointer;
-    transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease, background .3s ease;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .orbit-card .title{ font-family:var(--sans); font-weight:600; font-size:0.76rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
-  .orbit-card .meta{ font-family:var(--mono); font-size:0.6rem; color:var(--text-faint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; margin-top:0.15rem; }
-
-  .orbit-card.active{
-    transform:scale(1.18);
-    border-color:var(--line-bright);
-    background:var(--bg-alt);
-    box-shadow:0 18px 38px -16px rgba(255,255,255,0.22);
-    z-index:5;
-  }
-  .orbit-card.active .title{ white-space:normal; }
-
-  /* ---------- side detail panel (fixed position, never overflows) ---------- */
-  .detail-panel{
-    flex:none;
-    width:0;
-    opacity:0;
-    overflow:hidden;
-    transition:width .4s ease, opacity .3s ease, margin .4s ease;
-  }
-  .orbit-stage.active .detail-panel{
-    width:300px;
-    opacity:1;
-    margin-left:2.4rem;
-  }
-  .detail-inner{
-    background:var(--panel);
-    border:1px solid var(--line-bright);
-    border-radius:6px;
-    padding:1.15rem 1.25rem;
-    min-width:280px;
-  }
-  .detail-head h3{ font-family:var(--sans); font-weight:600; font-size:0.98rem; color:var(--text); margin:0 0 0.25rem; line-height:1.35; }
-  .detail-head span{ display:block; font-family:var(--mono); font-size:0.68rem; color:var(--text-faint); margin-bottom:0.9rem; }
-
-  .detail-body{ display:flex; flex-direction:column; gap:0.9rem; }
-  ul.node-desc{ margin:0; padding-left:1.05rem; color:var(--text-dim); font-size:0.85rem; }
-  ul.node-desc li{ margin-bottom:0.4rem; }
-  ul.node-desc li:last-child{ margin-bottom:0; }
-
-  .img-slot{
-    width:100%; max-width:220px; height:120px;
-    border:1px dashed var(--line-bright); border-radius:3px;
-    display:flex; align-items:center; justify-content:center;
-    color:var(--text-faint); font-family:var(--mono); font-size:0.64rem; text-align:center;
-    background:linear-gradient(45deg, transparent 48%, var(--line) 49%, var(--line) 51%, transparent 52%);
-    background-size:11px 11px;
-  }
-  .img-slot img{ max-width:100%; max-height:100%; object-fit:cover; border-radius:3px; }
-
-  /* ---------- responsive ---------- */
-  @media (max-width:900px){
-    .orbit-stage.active .detail-panel{ width:250px; margin-left:1.6rem; }
-    .detail-inner{ min-width:230px; padding:1rem; }
-  }
-
-  @media (max-width:760px){
-    .orbit-wrap{ --scale:0.68; }
-    .orbit-card{ --chip-w:96px; }
-    .orbit-stage{ flex-direction:column; }
-    .detail-panel{
-      width:100%; max-width:320px; opacity:0; height:0; margin-left:0;
-      transition:height .4s ease, opacity .3s ease, margin .4s ease;
-    }
-    .orbit-stage.active .detail-panel{ width:100%; height:auto; max-height:600px; opacity:1; margin-top:1.6rem; margin-left:0; }
-  }
-
-  @media (max-width:480px){
-    .orbit-wrap{ --scale:0.5; }
-    .orbit-card{ --chip-w:82px; }
-    .img-slot{ height:90px; }
-  }
-
-  /* ---------- skills section ---------- */
-  .skills-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:1.6rem; margin-top:1.8rem; }
-  .skills-cat h4{ font-family:var(--mono); font-size:0.78rem; letter-spacing:0.05em; color:var(--text-faint); margin:0 0 0.85rem; }
-  .tag-row{ display:flex; flex-wrap:wrap; gap:0.55rem; }
-  .tag{ font-family:var(--mono); font-size:0.78rem; color:var(--text-dim); border:1px solid var(--line); padding:0.35rem 0.7rem; border-radius:2px; transition:border-color .25s ease, color .25s ease, transform .25s ease; }
-  .tag:hover{ border-color:var(--line-bright); color:var(--text); transform:translateY(-2px); }
-
-  h2.section-title-plain{ font-family:var(--mono); font-weight:500; font-size:1.05rem; letter-spacing:0.05em; color:var(--white); margin:0 0 0.5rem; }
-
-  footer{ padding:2.6rem 0 3.5rem; text-align:center; color:var(--text-faint); font-family:var(--mono); font-size:0.72rem; letter-spacing:0.04em; }
-
-  @media (prefers-reduced-motion: reduce){
-    .orbit-ring, .orbit-counter{ animation:none !important; }
-    .orbit-card{ transition:none !important; }
-  }
-
-  ::selection{ background:var(--line-bright); color:var(--white); }
-</style>
+        /* Center Content Crossfade */
+        .fade-enter {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        .fade-enter-active {
+            opacity: 1;
+            transform: scale(1);
+            transition: opacity 300ms, transform 300ms;
+        }
+        
+        /* Placeholder Image Pattern */
+        .img-placeholder {
+            background: linear-gradient(45deg, transparent 48%, theme('colors.border') 49%, theme('colors.border') 51%, transparent 52%);
+            background-size: 14px 14px;
+        }
+    </style>
 </head>
-<body>
+<body class="w-screen h-screen flex items-center justify-center relative">
 
-<div class="circuit-bg" aria-hidden="true">
-  <svg viewBox="0 0 1200 1600" preserveAspectRatio="xMidYMin slice" xmlns="http://www.w3.org/2000/svg">
-    <g stroke="#3a3a3d" stroke-width="1" fill="none">
-      <path d="M0 120 H180 V260 H420 V80 H700"/>
-      <path d="M1200 220 H980 V420 H760"/>
-      <path d="M0 520 H260 V640 H60 V820 H340"/>
-      <path d="M1200 640 H900 V860 H1080 V1040"/>
-      <path d="M0 980 H200 V1160 H480"/>
-      <path d="M1200 1180 H960 V1360 H1200"/>
-      <path d="M0 1380 H240 V1560 H520"/>
-      <path d="M760 1600 V1440 H1000 V1260"/>
-    </g>
-    <g fill="#3a3a3d">
-      <circle cx="180" cy="120" r="3"/><circle cx="420" cy="260" r="3"/>
-      <circle cx="980" cy="220" r="3"/><circle cx="760" cy="420" r="3"/>
-      <circle cx="260" cy="520" r="3"/><circle cx="60" cy="820" r="3"/>
-      <circle cx="900" cy="640" r="3"/><circle cx="1080" cy="1040" r="3"/>
-      <circle cx="200" cy="980" r="3"/><circle cx="480" cy="1160" r="3"/>
-      <circle cx="960" cy="1180" r="3"/><circle cx="1000" cy="1260" r="3"/>
-      <circle cx="240" cy="1380" r="3"/><circle cx="520" cy="1560" r="3"/>
-    </g>
-  </svg>
-</div>
+    <!-- Background Grid / Texture -->
+    <div class="absolute inset-0 pointer-events-none opacity-20" aria-hidden="true">
+        <svg width="100%" height="100%">
+            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="0.5"/>
+            </pattern>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+        </svg>
+    </div>
 
-<div class="page">
-  <div class="wrap">
+    <div id="app" class="w-full h-full relative flex items-center justify-center layout-centered">
+        
+        <!-- Left/Center: Wheel Area -->
+        <div class="wheel-container absolute w-[800px] h-[800px] flex items-center justify-center z-10">
+            
+            <!-- Center Info Bubble (Doesn't spin) -->
+            <div id="center-bubble" class="absolute z-20 w-[420px] h-[420px] rounded-full bg-panel border-2 border-border flex flex-col items-center justify-center text-center p-8 shadow-2xl backdrop-blur-md bg-opacity-90 transition-all duration-300">
+                <!-- Content injected by JS -->
+            </div>
 
-    <header class="hero">
-      <div class="chip">
-        <span class="pinrow top"><span></span><span></span><span></span><span></span><span></span><span></span></span>
-        <div class="eyebrow-tag">HIGH SCHOOL &nbsp;·&nbsp; EXPECTED GRAD. 2027</div>
-        <h1 class="name">LE DAO TRUNG HIEU</h1>
-        <p class="tagline">
-          High school student with a strong academic foundation and a growing passion for
-          physics, electronics, and engineering, aspiring to pursue Electrical and Electronics
-          Engineering and develop technology-driven solutions to real-world challenges.
-        </p>
-        <div class="pins-contact">
-          <div class="pin-item">LOCATION<b>Ho Chi Minh City, Vietnam</b></div>
-          <div class="pin-item">PHONE<b>+84 989 415 751</b></div>
-          <div class="pin-item">EMAIL<b>trunghieu18122009@gmail.com</b></div>
+            <!-- Rotating SVG Donut Wheel -->
+            <svg id="wheel-svg" width="800" height="800" viewBox="0 0 800 800" class="absolute z-0 drop-shadow-2xl">
+                <g id="wheel-group" class="spin-slow">
+                    <!-- Segments injected by JS -->
+                </g>
+            </svg>
         </div>
-        <span class="pinrow bottom"><span></span><span></span><span></span><span></span><span></span><span></span></span>
-      </div>
-    </header>
 
-    <!-- ============ EDUCATION ============ -->
-    <section class="block" id="education">
-      <div class="orbit-stage">
-        <div class="orbit-wrap" style="--radius:120px; --chip-r:60px; --dur:34s;">
-          <div class="orbit-center"><h2>EDUCATION</h2><span>2 mục</span></div>
-          <div class="orbit-ring">
-
-            <div class="orbit-item" style="--angle:0deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:130px;" tabindex="0">
-                  <span class="title">Nguyen Thuong Hien High School</span>
-                  <span class="meta">2027</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Grade 11 GPA: 9.4/10 (2026)</li>
-                      <li>Grade 10 GPA: 9.0/10 (2025)</li>
-                    </ul>
-                    <div class="img-slot"><span>+ image</span></div>
-                  </div></template>
+        <!-- Right: Detail Panel (Level 2) -->
+        <div class="detail-panel absolute right-0 top-0 h-full w-[40vw] max-w-[600px] bg-panel border-l border-border z-20 shadow-2xl flex flex-col">
+            <div class="p-10 flex-1 overflow-y-auto">
+                <button id="btn-close-detail" class="mb-8 flex items-center text-sm font-mono text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    CLOSE DETAIL
+                </button>
+                
+                <div id="detail-eyebrow" class="font-mono text-xs tracking-widest text-gray-500 mb-3 uppercase"></div>
+                <h2 id="detail-title" class="text-3xl font-bold font-sans mb-2"></h2>
+                <div id="detail-meta" class="font-mono text-sm text-gray-400 mb-8 pb-4 border-b border-border"></div>
+                
+                <div class="img-placeholder w-full h-[280px] rounded-xl border border-border mb-8 flex items-center justify-center overflow-hidden relative">
+                    <img id="detail-image" src="" alt="" class="w-full h-full object-cover hidden">
+                    <span id="detail-image-fallback" class="font-mono text-gray-500 text-sm tracking-widest">+ IMAGE PLACEHOLDER</span>
                 </div>
-              </div>
-            </div>
-
-            <div class="orbit-item" style="--angle:180deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:130px;" tabindex="0">
-                  <span class="title">Tran Quang Khai Middle School</span>
-                  <span class="meta">2024</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc"><li>Grade 9 GPA: 9.2/10</li></ul>
-                    <div class="img-slot"><span>+ image</span></div>
-                  </div></template>
+                
+                <div id="detail-desc" class="text-gray-300 leading-relaxed font-sans text-sm space-y-4">
+                    <!-- Description items -->
                 </div>
-              </div>
             </div>
-
-          </div>
         </div>
-        <div class="detail-panel"><div class="detail-inner"></div></div>
-      </div>
-    </section>
 
-    <!-- ============ STANDARDIZED TESTS ============ -->
-    <section class="block" id="tests">
-      <div class="orbit-stage">
-        <div class="orbit-wrap reverse" style="--radius:120px; --chip-r:60px; --dur:30s;">
-          <div class="orbit-center"><h2>STANDARDIZED<br>TESTS</h2><span>2 mục</span></div>
-          <div class="orbit-ring">
+    </div>
 
-            <div class="orbit-item" style="--angle:0deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:130px;" tabindex="0">
-                  <span class="title">IELTS — 7.5</span>
-                  <span class="meta">Academic</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Reading: 8.5</li><li>Listening: 8.0</li>
-                      <li>Writing: 6.5</li><li>Speaking: 6.0</li>
-                    </ul>
-                    <div class="img-slot"><span>+ image</span></div>
-                  </div></template>
-                </div>
-              </div>
-            </div>
+    <script>
+        // --- Mock Data ---
+        const data = {
+            personal: {
+                name: "LE DAO TRUNG HIEU",
+                eyebrow: "HIGH SCHOOL · EXPECTED GRAD. 2027",
+                tagline: "High school student with a strong academic foundation and a growing passion for physics, electronics, and engineering, aspiring to pursue Electrical and Electronics Engineering.",
+                contact: "trunghieu18122009@gmail.com"
+            },
+            categories: [
+                {
+                    id: "education",
+                    title: "Education",
+                    color: "#3B82F6", // Blue
+                    items: [
+                        { title: "Nguyen Thuong Hien High School", meta: "Expected 2027", desc: ["Grade 11 GPA: 9.4/10 (2026)", "Grade 10 GPA: 9.0/10 (2025)"] },
+                        { title: "Tran Quang Khai Middle School", meta: "Graduated 2024", desc: ["Grade 9 GPA: 9.2/10"] }
+                    ]
+                },
+                {
+                    id: "tests",
+                    title: "Tests",
+                    color: "#8B5CF6", // Purple
+                    items: [
+                        { title: "IELTS - 7.5", meta: "Academic", desc: ["Reading: 8.5", "Listening: 8.0", "Writing: 6.5", "Speaking: 6.0"] },
+                        { title: "SAT - 1460", meta: "Composite", desc: ["Verbal: 680", "Math: 780"] }
+                    ]
+                },
+                {
+                    id: "honors",
+                    title: "Honors",
+                    color: "#F59E0B", // Amber
+                    items: [
+                        { title: "IAMO - Mathematics", meta: "Final Round · 2026", desc: ["Qualified for the Final Round of IAMO 2026 after successfully advancing through the preliminary round."] },
+                        { title: "IACHO - Chemistry", meta: "Final Round · 2026", desc: ["Passed the Preliminary and Semi-Final Rounds of the International Applied Chemistry Olympiad (IACHO) 2026 and was officially selected for the Final Round in Indonesia."] },
+                        { title: "ASMO - Science", meta: "Final Round · 2026", desc: ["To be determined."] }
+                    ]
+                },
+                {
+                    id: "leadership",
+                    title: "Leadership",
+                    color: "#10B981", // Emerald
+                    items: [
+                        { title: "Mid-Autumn - Se Dang", meta: "Project Leader · 2026", desc: ["Led a Mid-Autumn Festival initiative serving more than 650 children in a Se Dang ethnic minority community.", "Coordinated volunteers, budgeting, logistics, meals, and activities."] },
+                        { title: "Ánh Bình Minh", meta: "Project Member · 2026", desc: ["Contributed to an initiative expanding access to educational support for ethnic minority students in the Central Highlands."] },
+                        { title: "Gia Lai Mobile Clinic", meta: "Volunteer · 2026", desc: ["Supported online communications and recurring mobile-clinic activities providing healthcare services."] },
+                        { title: "Red Flamboyant", meta: "Participant · 2026", desc: ["Supported local ward activities, summer programs for children, and community-service initiatives."] }
+                    ]
+                },
+                {
+                    id: "stem",
+                    title: "STEM",
+                    color: "#EF4444", // Red
+                    items: [
+                        { title: "Student Focus Project", meta: "Founder · 2026-Present", desc: ["Developing an independent project exploring concentration and attention during studying."] },
+                        { title: "Solve for Tomorrow", meta: "National · 2026", desc: ["Completed a STEM innovation program covering design thinking, AI, IoT, and problem-solving."] },
+                        { title: "Intro to Devices", meta: "KAIST · 2026", desc: ["Studied semiconductor devices, electronic components, and fundamental engineering concepts."] },
+                        { title: "Intro Programming", meta: "Microsoft · 2026", desc: ["Studied coding fundamentals, algorithms, problem-solving."] },
+                        { title: "Water Rocket", meta: "Team Member · 2025", desc: ["Designed, built, and tested a water rocket, using iterative testing to improve flight performance."] }
+                    ]
+                },
+                {
+                    id: "activities",
+                    title: "Activities",
+                    color: "#EC4899", // Pink
+                    items: [
+                        { title: "Cheerleading Team", meta: "Team Member · 2025", desc: ["Performed at school athletic events and developed teamwork, discipline, and performance skills."] },
+                        { title: "Dance Competition", meta: "Performer · 2025", desc: ["Represented the class in the annual dance competition."] },
+                        { title: "CMD Education Fair", meta: "Student Leader · 2026", desc: ["Supported event organization and coordination; received a Certificate of Appreciation."] }
+                    ]
+                }
+            ]
+        };
 
-            <div class="orbit-item" style="--angle:180deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:130px;" tabindex="0">
-                  <span class="title">SAT — 1460</span>
-                  <span class="meta">Composite</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc"><li>Verbal: 680</li><li>Math: 780</li></ul>
-                    <div class="img-slot"><span>+ image</span></div>
-                  </div></template>
-                </div>
-              </div>
-            </div>
+        // --- Application State ---
+        let state = {
+            level: 0, // 0: Home, 1: Category Selected, 2: Item Selected
+            category: null,
+            item: null
+        };
 
-          </div>
-        </div>
-        <div class="detail-panel"><div class="detail-inner"></div></div>
-      </div>
-    </section>
+        // DOM Elements
+        const appContainer = document.getElementById('app');
+        const wheelGroup = document.getElementById('wheel-group');
+        const centerBubble = document.getElementById('center-bubble');
+        
+        // Detail Panel Elements
+        const detailEyebrow = document.getElementById('detail-eyebrow');
+        const detailTitle = document.getElementById('detail-title');
+        const detailMeta = document.getElementById('detail-meta');
+        const detailDesc = document.getElementById('detail-desc');
+        const btnCloseDetail = document.getElementById('btn-close-detail');
 
-    <!-- ============ HONORS & AWARDS ============ -->
-    <section class="block" id="honors">
-      <div class="orbit-stage">
-        <div class="orbit-wrap" style="--radius:130px; --chip-r:65px; --dur:32s;">
-          <div class="orbit-center"><h2>HONORS &amp;<br>AWARDS</h2><span>2 mục</span></div>
-          <div class="orbit-ring">
+        // SVG Constants
+        const SVG_SIZE = 800;
+        const CENTER_X = SVG_SIZE / 2;
+        const CENTER_Y = SVG_SIZE / 2;
+        const RADIUS_OUTER = 380;
+        const RADIUS_INNER = 230; // Creates the donut hole for the center bubble
 
-            <div class="orbit-item" style="--angle:0deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">IAMO — Mathematics</span>
-                  <span class="meta">Final Round · 2026</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Qualified for the Final Round of IAMO 2026 after successfully advancing through the preliminary round, demonstrating strong mathematical proficiency, logical reasoning, and problem-solving skills.</li>
-                    </ul>
-                    <img src="images/IAMO.JPG" alt="Mô tả ảnh">
-                  </div></template>
-                </div>
-              </div>
-            </div>
+        /**
+         * Calculates X,Y coordinates for a point on a circle
+         */
+        function getCoordinatesForPercent(percent, radius) {
+            // Subtract PI/2 to start at the top (12 o'clock)
+            const angle = (percent * 2 * Math.PI) - (Math.PI / 2);
+            return [
+                CENTER_X + Math.cos(angle) * radius,
+                CENTER_Y + Math.sin(angle) * radius
+            ];
+        }
 
-            <div class="orbit-item" style="--angle:120deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">IACHO — Chemistry</span>
-                  <span class="meta">Final Round · 2026</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Passed the Preliminary and Semi-Final Rounds of the International Applied Chemistry Olympiad (IACHO) 2026 and was officially selected for the Final Round, held in Bandung, Indonesia, September 24–27, 2026.</li>
-                    </ul>
-                    <img src="images/LOA.png" alt="Mô tả ảnh">
-                  </div></template>
-                </div>
-              </div>
-            </div>
+        /**
+         * Generates the SVG path 'd' attribute for a donut segment
+         */
+        function createArcPath(startPercent, endPercent) {
+            const [startX_outer, startY_outer] = getCoordinatesForPercent(startPercent, RADIUS_OUTER);
+            const [endX_outer, endY_outer] = getCoordinatesForPercent(endPercent, RADIUS_OUTER);
+            
+            const [startX_inner, startY_inner] = getCoordinatesForPercent(startPercent, RADIUS_INNER);
+            const [endX_inner, endY_inner] = getCoordinatesForPercent(endPercent, RADIUS_INNER);
+            
+            // If the arc is > 50% of the circle, use large-arc-flag
+            const largeArcFlag = endPercent - startPercent > 0.5 ? 1 : 0;
 
-            <div class="orbit-item" style="--angle:240deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">ASMO — Science </span>
-                  <span class="meta">Final Round · 2026</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>To be determined.</li>
-                    </ul>
-                    <div class="img-slot"><span>+ image</span></div>
-                  </div></template>
-                </div>
-              </div>
-            </div>
+            return [
+                `M ${startX_inner} ${startY_inner}`,
+                `L ${startX_outer} ${startY_outer}`,
+                `A ${RADIUS_OUTER} ${RADIUS_OUTER} 0 ${largeArcFlag} 1 ${endX_outer} ${endY_outer}`,
+                `L ${endX_inner} ${endY_inner}`,
+                `A ${RADIUS_INNER} ${RADIUS_INNER} 0 ${largeArcFlag} 0 ${startX_inner} ${startY_inner}`,
+                'Z'
+            ].join(' ');
+        }
 
-          </div>
-        </div>
-        <div class="detail-panel"><div class="detail-inner"></div></div>
-      </div>
-    </section>
+        /**
+         * Truncate text for SVG display
+         */
+        function truncate(text, length) {
+            return text.length > length ? text.substring(0, length) + '...' : text;
+        }
 
-    <!-- ============ LEADERSHIP & COMMUNITY IMPACT ============ -->
-    <section class="block" id="leadership">
-      <div class="orbit-stage">
-        <div class="orbit-wrap reverse" style="--radius:160px; --chip-r:65px; --dur:44s;">
-          <div class="orbit-center"><h2>LEADERSHIP &amp;<br>COMMUNITY</h2><span>5 mục</span></div>
-          <div class="orbit-ring">
+        function renderWheel(items, isCategoryLevel) {
+            wheelGroup.innerHTML = '';
+            const numItems = items.length;
+            const gap = 0.005; // Small visual gap between slices
 
-            <div class="orbit-item" style="--angle:0deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">Mid-Autumn Festival — Se Dang</span>
-                  <span class="meta">Project Leader · 2026</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Led a Mid-Autumn Festival initiative serving more than 650 children in a Se Dang ethnic minority community.</li>
-                      <li>Coordinated volunteers, budgeting, logistics, meals, gifts, and educational and creative activities.</li>
-                    </ul>
-                    <div class="img-slot"><span>+ image</span></div>
-                  </div></template>
-                </div>
-              </div>
-            </div>
+            items.forEach((item, index) => {
+                const startPercent = (index / numItems) + gap;
+                const endPercent = ((index + 1) / numItems) - gap;
+                const midPercent = (startPercent + endPercent) / 2;
+                
+                // Color mapping: Use category color if at level 1, otherwise use a generated/assigned color
+                let segmentColor = item.color;
+                if (!isCategoryLevel && state.category) {
+                    // Slight variation of category color for items
+                    segmentColor = state.category.color;
+                }
 
-            <div class="orbit-item" style="--angle:60deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">Ánh Bình Minh Tây Nguyên</span>
-                  <span class="meta">Project Member · 2026</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Contributed to an initiative expanding access to educational support for ethnic minority students in the Central Highlands, including Ede and Jarai communities.</li>
-                    </ul>
-                    <div class="img-slot"><span>+ image</span></div>
-                  </div></template>
-                </div>
-              </div>
-            </div>
+                // Create a group for the segment
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.classList.add('wheel-segment');
+                g.style.transformOrigin = `${CENTER_X}px ${CENTER_Y}px`;
+                
+                // Segment Path
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', createArcPath(startPercent, endPercent));
+                path.setAttribute('fill', segmentColor);
+                path.setAttribute('fill-opacity', isCategoryLevel ? '0.85' : '0.6');
+                path.setAttribute('stroke', '#2a2a2d');
+                path.setAttribute('stroke-width', '2');
+                
+                // Hover gradient/highlight effect using CSS handled in classes, but we can set base styles
+                
+                // Segment Text
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                const textRadius = (RADIUS_INNER + RADIUS_OUTER) / 2; // Place text in middle of slice
+                const [textX, textY] = getCoordinatesForPercent(midPercent, textRadius);
+                
+                // Calculate rotation for text so it points outwards
+                let angleDeg = midPercent * 360;
+                // Keep text readable (prevent upside down text on the left side)
+                let rotateAngle = angleDeg - 90;
+                if (angleDeg > 180) {
+                    rotateAngle += 180;
+                }
 
-            <div class="orbit-item" style="--angle:120deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">Gia Lai Mobile Clinic</span>
-                  <span class="meta">Volunteer · 2026</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Supported online communications and recurring mobile-clinic activities providing healthcare services and community assistance to ethnic minority communities.</li>
-                    </ul>
-                    <div class="img-slot"><span>+ image</span></div>
-                  </div></template>
-                </div>
-              </div>
-            </div>
+                text.setAttribute('x', textX);
+                text.setAttribute('y', textY);
+                text.setAttribute('fill', '#ffffff');
+                text.setAttribute('font-family', 'Inter, sans-serif');
+                text.setAttribute('font-weight', '600');
+                text.setAttribute('font-size', isCategoryLevel ? '18px' : '14px');
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('dominant-baseline', 'middle');
+                text.setAttribute('transform', `rotate(${rotateAngle}, ${textX}, ${textY})`);
+                text.textContent = truncate(item.title, isCategoryLevel ? 20 : 15);
 
-            <div class="orbit-item" style="--angle:180deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">Red Flamboyant Campaign</span>
-                  <span class="meta">Participant · 2026</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Supported local ward activities, summer programs for children, and community-service and charitable initiatives.</li>
-                    </ul>
-                    <img src="images/HPD.jpg" alt="Mô tả ảnh">
-                  </div></template>
-                </div>
-              </div>
-            </div>
+                g.appendChild(path);
+                g.appendChild(text);
 
-            <div class="orbit-item" style="--angle:240deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">MAERSK Charity Marathon</span>
-                  <span class="meta">Volunteer · 2026</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Participated in a charity marathon supporting fundraising for community-focused charitable initiatives.</li>
-                    </ul>
-                    <div class="img-slot"><span>+ image</span></div>
-                  </div></template>
-                </div>
-              </div>
-            </div>
+                // Interaction
+                g.addEventListener('click', () => {
+                    if (isCategoryLevel) {
+                        handleCategoryClick(item);
+                    } else {
+                        handleItemClick(item);
+                    }
+                });
 
-            <div class="orbit-item" style="--angle:300deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">Smiling Chances</span>
-                  <span class="meta">Volunteer · 2026</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>TBD.</li>
-                    </ul>
-                    <img src="images/Smiling chances.png" alt="Mô tả ảnh">
-                  </div></template>
-                </div>
-              </div>
-            </div>
+                wheelGroup.appendChild(g);
+            });
+        }
 
-          </div>
-        </div>
-        <div class="detail-panel"><div class="detail-inner"></div></div>
-      </div>
-    </section>
+        function updateCenterBubble() {
+            // Apply fade transition
+            centerBubble.classList.remove('fade-enter-active');
+            centerBubble.classList.add('fade-enter');
+            
+            setTimeout(() => {
+                if (state.level === 0) {
+                    // Personal Info
+                    centerBubble.innerHTML = `
+                        <div class="font-mono text-[0.65rem] tracking-[0.2em] text-accent mb-4 uppercase border border-border px-3 py-1 rounded-full">${data.personal.eyebrow}</div>
+                        <h1 class="text-3xl font-bold font-mono tracking-tight text-white mb-4 leading-tight">${data.personal.name}</h1>
+                        <p class="text-gray-400 text-sm mb-6 font-sans leading-relaxed">${data.personal.tagline}</p>
+                        <div class="font-mono text-xs text-gray-500 border-t border-border pt-4 w-full">
+                            ${data.personal.contact}
+                        </div>
+                    `;
+                } else {
+                    // Category Info + Back Button
+                    const category = state.category;
+                    centerBubble.innerHTML = `
+                        <div class="w-16 h-16 rounded-full mb-4 flex items-center justify-center border-4 border-panel" style="background-color: ${category.color}">
+                            <!-- Icon placeholder -->
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <h2 class="text-3xl font-bold font-mono tracking-tight text-white mb-2 uppercase">${category.title}</h2>
+                        <p class="text-gray-400 font-mono text-sm mb-8">${category.items.length} Achievements</p>
+                        
+                        <button onclick="goBack()" class="px-6 py-2 rounded-full border border-border bg-transparent hover:bg-white hover:text-black transition-colors font-mono text-xs tracking-widest uppercase flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            BACK
+                        </button>
+                    `;
+                }
+                
+                // Trigger reflow and fade in
+                void centerBubble.offsetWidth;
+                centerBubble.classList.remove('fade-enter');
+                centerBubble.classList.add('fade-enter-active');
+            }, 150); // wait for fade out
+        }
 
-    <!-- ============ STEM, RESEARCH & ACADEMIC ENRICHMENT ============ -->
-    <section class="block" id="stem">
-      <div class="orbit-stage">
-        <div class="orbit-wrap" style="--radius:190px; --chip-r:65px; --dur:52s;">
-          <div class="orbit-center"><h2>STEM &amp;<br>RESEARCH</h2><span>7 mục</span></div>
-          <div class="orbit-ring">
+        function updateDetailPanel() {
+            if (!state.item || !state.category) return;
+            
+            detailEyebrow.textContent = state.category.title;
+            detailEyebrow.style.color = state.category.color;
+            detailTitle.textContent = state.item.title;
+            detailMeta.textContent = state.item.meta;
+            
+            detailDesc.innerHTML = '';
+            state.item.desc.forEach(p => {
+                const pEl = document.createElement('p');
+                pEl.className = "flex items-start";
+                pEl.innerHTML = `<span class="mr-3 text-accent mt-1">▹</span> <span>${p}</span>`;
+                detailDesc.appendChild(pEl);
+            });
+        }
 
-            <div class="orbit-item" style="--angle:0deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">Student Focus &amp; Attention</span>
-                  <span class="meta">Founder · 2026–Present</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Developing an independent project exploring concentration and attention during studying and practical approaches to improve students' focus and learning effectiveness.</li>
-                    </ul>
-                    <div class="img-slot"><span>+ image</span></div>
-                  </div></template>
-                </div>
-              </div>
-            </div>
+        function handleCategoryClick(category) {
+            state.level = 1;
+            state.category = category;
+            state.item = null;
+            
+            updateCenterBubble();
+            renderWheel(category.items, false);
+            updateLayout();
+        }
 
-            <div class="orbit-item" style="--angle:51.4deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">Samsung Solve for Tomorrow</span>
-                  <span class="meta">National · 2026</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Completed a STEM innovation program covering design thinking, AI, IoT, and problem-solving, with a focus on solutions to real-world community challenges.</li>
-                    </ul>
-                    <img src="images/Solve for tomorrow.JPG" alt="Mô tả ảnh">
-                  </div></template>
-                </div>
-              </div>
-            </div>
+        function handleItemClick(item) {
+            state.level = 2;
+            state.item = item;
+            
+            updateDetailPanel();
+            updateLayout();
+        }
 
-            <div class="orbit-item" style="--angle:102.8deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">Introduction to Devices</span>
-                  <span class="meta">KAIST · 2026</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Studied semiconductor devices, electronic components, and fundamental engineering concepts.</li>
-                    </ul>
-                    <img src="images/KAIST.pdf" alt="Mô tả ảnh">
-                  </div></template>
-                </div>
-              </div>
-            </div>
+        function goBack() {
+            if (state.level === 2) {
+                // From Item Detail back to Category Items
+                state.level = 1;
+                state.item = null;
+                updateLayout();
+                // Wheel is already showing category items, no need to re-render wheel
+            } else if (state.level === 1) {
+                // From Category back to Home
+                state.level = 0;
+                state.category = null;
+                updateCenterBubble();
+                renderWheel(data.categories, true);
+                updateLayout();
+            }
+        }
 
-            <div class="orbit-item" style="--angle:154.2deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">Introductory Programming</span>
-                  <span class="meta">Microsoft · 2026</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Studied coding fundamentals, algorithms, problem-solving, and basic software-development concepts.</li>
-                    </ul>
-                    <img src="images/Microsoft.pdf" alt="Mô tả ảnh">
-                  </div></template>
-                </div>
-              </div>
-            </div>
+        function updateLayout() {
+            if (state.level === 2) {
+                appContainer.classList.remove('layout-centered');
+                appContainer.classList.add('layout-shifted');
+            } else {
+                appContainer.classList.remove('layout-shifted');
+                appContainer.classList.add('layout-centered');
+            }
+        }
 
-            <div class="orbit-item" style="--angle:205.6deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">Introductory Data Course</span>
-                  <span class="meta">Google · 2026</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Studied fundamental data concepts, data-analysis processes, and basic analytical thinking.</li>
-                    </ul>
-                    <img src="images/Google.pdf" alt="Mô tả ảnh">
-                  </div></template>
-                </div>
-              </div>
-            </div>
-
-            <div class="orbit-item" style="--angle:257deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">Water Rocket Competition</span>
-                  <span class="meta">Team Member · 2025</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Designed, built, and tested a water rocket, using iterative testing to improve flight performance and target accuracy.</li>
-                    </ul>
-                    <div class="img-slot"><span>+ image</span></div>
-                  </div></template>
-                </div>
-              </div>
-            </div>
-
-            <div class="orbit-item" style="--angle:308.4deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">UNESCO Culture Education</span>
-                  <span class="meta">Participant · 2026</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Participated in a cultural education program focused on cultural awareness, intercultural understanding, and education.</li>
-                    </ul>
-                    <img src="images/UNESCO.JPG" alt="Mô tả ảnh">
-                  </div></template>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-        <div class="detail-panel"><div class="detail-inner"></div></div>
-      </div>
-    </section>
-
-    <!-- ============ SCHOOL & EXTRACURRICULAR ACTIVITIES ============ -->
-    <section class="block" id="activities">
-      <div class="orbit-stage">
-        <div class="orbit-wrap reverse" style="--radius:140px; --chip-r:65px; --dur:38s;">
-          <div class="orbit-center"><h2>SCHOOL &amp;<br>ACTIVITIES</h2><span>4 mục</span></div>
-          <div class="orbit-ring">
-
-            <div class="orbit-item" style="--angle:0deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">Lightning Cheerleading Team</span>
-                  <span class="meta">Team Member · 2025</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Performed at school athletic events and developed teamwork, discipline, and performance skills through team practices and routines.</li>
-                    </ul>
-                    <div class="img-slot"><span>+ image</span></div>
-                  </div></template>
-                </div>
-              </div>
-            </div>
-
-            <div class="orbit-item" style="--angle:90deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">School Annual Dance Competition</span>
-                  <span class="meta">Performer · 2025</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Represented the class in the annual dance competition and collaborated with teammates to rehearse and perform choreographed routines.</li>
-                    </ul>
-                    <div class="img-slot"><span>+ image</span></div>
-                  </div></template>
-                </div>
-              </div>
-            </div>
-
-            <div class="orbit-item" style="--angle:180deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">Class Food Stall</span>
-                  <span class="meta">School Camp · 2025</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Helped plan, build, and operate the class food stall during the annual school camp.</li>
-                    </ul>
-                    <div class="img-slot"><span>+ image</span></div>
-                  </div></template>
-                </div>
-              </div>
-            </div>
-
-            <div class="orbit-item" style="--angle:270deg;">
-              <div class="orbit-counter">
-                <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
-                  <span class="title">CMD Education Fair</span>
-                  <span class="meta">Student Leader · 2026</span>
-                  <template class="orbit-data"><div class="detail-body">
-                    <ul class="node-desc">
-                      <li>Supported event organization and coordination; received a Certificate of Appreciation for outstanding leadership, dedication, and enthusiasm.</li>
-                    </ul>
-                    <img src="images/CMD.png" alt="Mô tả ảnh">
-                  </div></template>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-        <div class="detail-panel"><div class="detail-inner"></div></div>
-      </div>
-    </section>
-
-    <!-- ============ SKILLS & INTERESTS ============ -->
-    <section class="block" id="skills">
-      <h2 class="section-title-plain">Skills &amp; Interests</h2>
-      <div class="skills-grid">
-        <div class="skills-cat">
-          <h4>ACADEMIC INTERESTS</h4>
-          <div class="tag-row">
-            <span class="tag">Physics</span>
-            <span class="tag">Electronics</span>
-            <span class="tag">Mathematics</span>
-            <span class="tag">Engineering</span>
-            <span class="tag">AI / Data</span>
-          </div>
-        </div>
-        <div class="skills-cat">
-          <h4>ACTIVITIES</h4>
-          <div class="tag-row">
-            <span class="tag">Cheerleading</span>
-            <span class="tag">Table Tennis</span>
-            <span class="tag">Dance</span>
-            <span class="tag">Community Service</span>
-            <span class="tag">Event Support</span>
-            <span class="tag">Teamwork</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <footer>LE DAO TRUNG HIEU · HO CHI MINH CITY, VIETNAM</footer>
-
-  </div>
-</div>
-
-<script>
-  document.querySelectorAll('.orbit-stage').forEach(function(stage){
-    var panelInner = stage.querySelector('.detail-inner');
-    var cards = stage.querySelectorAll('.orbit-card');
-
-    function showDetail(card){
-      var title = card.querySelector('.title').textContent;
-      var meta = card.querySelector('.meta').textContent;
-      var tpl = card.querySelector('.orbit-data');
-
-      panelInner.innerHTML = '';
-
-      var head = document.createElement('div');
-      head.className = 'detail-head';
-
-      var h3 = document.createElement('h3');
-      h3.textContent = title;
-
-      var span = document.createElement('span');
-      span.textContent = meta;
-
-      head.appendChild(h3);
-      head.appendChild(span);
-
-      panelInner.appendChild(head);
-      panelInner.appendChild(tpl.content.cloneNode(true));
-
-      stage.classList.add('active');
-    }
-
-    function hideDetail(){
-      stage.classList.remove('active');
-    }
-
-    cards.forEach(function(card){
-      card.addEventListener('click', function(e){
-        e.stopPropagation();
-
-        var wasActive = card.classList.contains('active');
-
-        cards.forEach(function(c){
-          c.classList.remove('active');
+        // Event Listeners
+        btnCloseDetail.addEventListener('click', goBack);
+        
+        // Allow clicking background in Level 2 to go back
+        appContainer.addEventListener('click', (e) => {
+            if (state.level === 2 && !e.target.closest('.detail-panel') && !e.target.closest('#wheel-svg')) {
+                goBack();
+            }
         });
 
-        if (wasActive){
-          hideDetail();
-        } else {
-          card.classList.add('active');
-          showDetail(card);
+        // Initialize App
+        function init() {
+            state.level = 0;
+            updateCenterBubble();
+            renderWheel(data.categories, true);
+            updateLayout();
         }
-      });
 
-      // Keep keyboard accessibility without bringing hover behavior back.
-      card.addEventListener('keydown', function(e){
-        if (e.key === 'Enter' || e.key === ' '){
-          e.preventDefault();
-          card.click();
-        }
-      });
-    });
-  });
-
-  document.addEventListener('click', function(e){
-    if (!e.target.closest('.orbit-card')){
-      document.querySelectorAll('.orbit-card.active').forEach(function(c){ c.classList.remove('active'); });
-      document.querySelectorAll('.orbit-stage.active').forEach(function(s){ s.classList.remove('active'); });
-    }
-  });
-</script>
-
+        window.onload = init;
+    </script>
 </body>
 </html>
