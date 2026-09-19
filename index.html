@@ -289,7 +289,8 @@
                 },
                 {
                     id: "leadership",
-                    title: "Leadership & Community",
+                    title: "Leadership & 
+                            Community",
                     color: "#059669", // Emerald
                     items: [
                         {
@@ -557,30 +558,119 @@
                 path.setAttribute('stroke', '#2a2a2d');
                 path.setAttribute('stroke-width', '1.5');
 
-                // Label Positioning
-                const textPos = polarToCartesian(CENTER, CENTER, (R_INNER + R_OUTER) / 2, midAngle);
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', textPos.x);
-                text.setAttribute('y', textPos.y);
+                // ============================================================
+                // CURVED LABEL — chữ chạy theo cung tròn của từng ô
+                // ============================================================
+
+                const textRadius = (R_INNER + R_OUTER) / 2;
+
+                // Độ rộng cung dành cho chữ
+                const segmentAngle = anglePerSegment;
+                const paddingAngle = isCategoryLevel ? 7 : 5;
+
+                let arcStart = midAngle - (segmentAngle / 2) + paddingAngle;
+                let arcEnd   = midAngle + (segmentAngle / 2) - paddingAngle;
+
+                // Nếu chữ nằm ở nửa dưới donut,
+                // đảo chiều cung để chữ vẫn luôn đọc đúng chiều.
+                const upsideDown = midAngle > 90 && midAngle < 270;
+            
+                if (upsideDown) {
+                 [arcStart, arcEnd] = [arcEnd, arcStart];
+                }
+
+                const start = polarToCartesian(
+                CENTER,
+                CENTER,
+                textRadius,
+                 arcStart
+                );
+
+                const end = polarToCartesian(
+                CENTER,
+                CENTER,
+                textRadius,
+                arcEnd
+                );
+
+                // ID riêng cho đường dẫn chữ
+                const pathId = `text-path-${appState.level}-${index}`;
+
+                // Đường tròn ẩn để textPath bám vào
+                const textCurve = document.createElementNS(
+                    'http://www.w3.org/2000/svg',
+                    'path'
+                );
+
+                textCurve.setAttribute('id', pathId);
+
+                textCurve.setAttribute(
+                    'd',
+                    `M ${start.x} ${start.y}
+                     A ${textRadius} ${textRadius} 0 0 ${upsideDown ? 0 : 1}
+                     ${end.x} ${end.y}`
+                );
+
+                textCurve.setAttribute('fill', 'none');
+                textCurve.setAttribute('stroke', 'none');
+
+                // Text
+                const text = document.createElementNS(
+                    'http://www.w3.org/2000/svg',
+                    'text'
+                );
+
+                text.classList.add('item-label');
                 text.setAttribute('fill', '#ffffff');
                 text.setAttribute('font-family', 'Inter, sans-serif');
                 text.setAttribute('font-weight', '600');
-                text.setAttribute('font-size', isCategoryLevel ? '14px' : '12px');
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('dominant-baseline', 'middle');
+                text.setAttribute(
+                  'font-size',
+                isCategoryLevel ? '14px' : '11px'
+                );
+                text.setAttribute(
+                    'letter-spacing',
+                    isCategoryLevel ? '0.2px' : '0px'
+                );
 
-                // Orient text upright
-                let rotateAngle = midAngle - 90;
-                if (midAngle > 90 && midAngle < 270) {
-                    rotateAngle += 180;
+                // TextPath
+                const textPath = document.createElementNS(
+                   'http://www.w3.org/2000/svg',
+                    'textPath'
+                );
+
+                textPath.setAttribute(
+                    'href',
+                    `#${pathId}`
+                );
+
+                textPath.setAttribute(
+                    'startOffset',
+                    '50%'
+                );
+
+                textPath.setAttribute(
+                    'text-anchor',
+                'middle'
+                );
+
+                // Giới hạn title để không đè sang ô kế bên
+                let titleText = item.title;
+        
+                const maxLength = isCategoryLevel ? 24 : 32;
+
+                 if (titleText.length > maxLength) {
+                    titleText =
+                        titleText.substring(0, maxLength - 2).trimEnd() + '..';
                 }
-                text.setAttribute('transform', `rotate(${rotateAngle}, ${textPos.x}, ${textPos.y})`);
-                
-                // Truncate long titles
-                const titleText = item.title;
-                text.textContent = titleText.length > 22 ? titleText.substring(0, 20) + '..' : titleText;
 
+                textPath.textContent = titleText;
+
+                text.appendChild(textPath);
+
+                // Thêm vào group
                 g.appendChild(path);
+                g.appendChild(textCurve);
                 g.appendChild(text);
 
                 // Click Actions
