@@ -1,652 +1,776 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Le Dao Trung Hieu — Portfolio</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
   :root{
-    --ink:#0a0a0a;
-    --paper:#ffffff;
-    --gray-mid:#6b6b6b;
-    --gray-line:#d8d8d8;
-    --gray-fill:#f0f0f0;
+    --bg:#050506;
+    --bg-alt:#0c0c0e;
+    --panel:#111113;
+    --line:#2a2a2d;
+    --line-bright:#4c4c50;
+    --text:#f2f2f2;
+    --text-dim:#9a9a9e;
+    --text-faint:#616166;
+    --white:#ffffff;
+    --mono:'JetBrains Mono', monospace;
+    --sans:'Inter', sans-serif;
   }
 
-  *{box-sizing:border-box;}
-
-  html{scroll-behavior:smooth;}
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
 
   body{
     margin:0;
-    background:var(--paper);
-    color:var(--ink);
-    font-family:"Space Grotesk", "Helvetica Neue", Arial, sans-serif;
-    line-height:1.5;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.55;
     -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
   }
 
-  ::selection{ background:var(--ink); color:var(--paper); }
+  /* ---------- faint circuit-trace background ---------- */
+  .circuit-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.5;
+  }
+  .circuit-bg svg{ width:100%; height:100%; }
 
-  .mono{
-    font-family:"IBM Plex Mono", monospace;
-    font-size:0.85rem;
-    letter-spacing:0.01em;
-  }
+  .page{ position:relative; z-index:1; }
 
-  .wrap{
-    max-width:920px;
-    margin:0 auto;
-    padding:0 28px;
-  }
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 1.75rem; }
 
-  a{ color:inherit; }
-
-  /* ---------- side index ---------- */
-  .index{
-    position:fixed;
-    right:20px;
-    top:50%;
-    transform:translateY(-50%);
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-    z-index:50;
-  }
-  .index a{
-    width:9px;height:9px;
-    border-radius:50%;
-    border:1px solid var(--ink);
-    background:transparent;
-    display:block;
-    transition:background .2s ease;
-  }
-  .index a.on{ background:var(--ink); }
-  @media (max-width:760px){ .index{ display:none; } }
-
-  /* ---------- hero ---------- */
-  section.hero{
-    padding:120px 0 80px;
-    opacity:0;
-    animation:rise .8s ease forwards .1s;
-  }
-  @keyframes rise{
-    from{ opacity:0; transform:translateY(14px); }
-    to{ opacity:1; transform:translateY(0); }
-  }
-  .hero h1{
-    font-size:clamp(2.2rem, 6vw, 3.6rem);
-    font-weight:700;
-    margin:0 0 18px;
-    letter-spacing:-0.01em;
-  }
-  .hero .contact{
-    display:flex;
-    flex-wrap:wrap;
-    gap:6px 14px;
-    color:var(--gray-mid);
-    margin-bottom:34px;
-  }
-  .hero .contact span:not(:last-child)::after{
-    content:"·";
-    margin-left:14px;
-    color:var(--gray-line);
-  }
-  .trace{
-    width:100%;
-    height:26px;
-    display:block;
-    margin-bottom:34px;
-  }
-  .trace path{ fill:none; stroke:var(--ink); stroke-width:1.4; }
-  .trace circle{ fill:var(--ink); }
-
-  .hero p.bio{
-    max-width:62ch;
-    font-size:1.05rem;
-    color:#222;
-    margin:0 0 26px;
-  }
-  .hero .target{
-    font-size:1.05rem;
-    padding-top:22px;
-    border-top:1px solid var(--gray-line);
-    max-width:62ch;
-  }
-  .hero .target b{ font-weight:600; }
-
-  /* ---------- section headers ---------- */
-  .section-head{
-    display:flex;
-    align-items:baseline;
-    justify-content:space-between;
-    margin:0 0 30px;
-    padding-top:64px;
-  }
-  .section-head h2{
-    font-size:1.5rem;
-    font-weight:600;
-    margin:0;
-  }
-  .section-head .count{
-    color:var(--gray-mid);
-  }
-
-  /* ---------- education (kept plain) ---------- */
-  .edu-item{
-    display:flex;
-    justify-content:space-between;
-    gap:20px;
-    padding:18px 0;
-    border-top:1px solid var(--gray-line);
-  }
-  .edu-item:last-of-type{ border-bottom:1px solid var(--gray-line); }
-  .edu-item .school{ font-weight:600; }
-  .edu-item .meta{ color:var(--gray-mid); font-size:0.92rem; margin-top:4px; }
-  .edu-item .grades{ text-align:right; white-space:nowrap; color:var(--gray-mid); }
-  .edu-item .grades div{ margin-top:4px; }
-
-  .tests{
-    display:flex;
-    gap:36px;
-    padding:20px 0 8px;
-    flex-wrap:wrap;
-  }
-  .tests .t-label{ color:var(--gray-mid); display:block; margin-bottom:4px; }
-  .tests .t-score{ font-size:1.3rem; font-weight:600; }
-
-  /* ---------- dynamic chip grid ---------- */
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));
-    gap:18px;
-    padding-bottom:20px;
-  }
-  .grid.skills{ grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); }
+  /* ---------- hero / "chip" header ---------- */
+  header.hero{ padding:5.5rem 0 4rem; }
 
   .chip{
     position:relative;
-    border:1px solid var(--ink);
-    padding:26px 20px 20px;
-    min-height:168px;
-    background:var(--paper);
-    cursor:pointer;
-    overflow:hidden;
+    max-width:720px;
+    margin:0 auto;
+    border:1.5px solid var(--line-bright);
+    border-radius:6px;
+    background:var(--bg-alt);
+    padding:3.25rem 2.5rem 2.75rem;
+    text-align:center;
   }
-  .chip::before, .chip::after{
+
+  .chip::before{
     content:"";
+    position:absolute; top:-11px; left:50%;
+    transform:translateX(-50%);
+    width:22px; height:22px;
+    background:var(--bg);
+    border-left:1.5px solid var(--line-bright);
+    border-bottom:1.5px solid var(--line-bright);
+    border-radius:0 0 0 22px;
+  }
+
+  .chip .pinrow{
+    position:absolute; left:14px; right:14px;
+    display:flex; justify-content:space-between; pointer-events:none;
+  }
+  .chip .pinrow.top{ top:-6px; }
+  .chip .pinrow.bottom{ bottom:-6px; }
+  .chip .pinrow span{ width:2px; height:6px; background:var(--line-bright); }
+
+  .eyebrow-tag{
+    font-family:var(--mono); font-size:0.72rem; letter-spacing:0.14em;
+    color:var(--text-faint); margin-bottom:1.1rem;
+  }
+
+  h1.name{
+    font-family:var(--mono); font-weight:700;
+    font-size:clamp(1.7rem, 4.4vw, 2.6rem);
+    letter-spacing:0.03em; margin:0 0 0.9rem; color:var(--white);
+  }
+
+  .tagline{ max-width:52ch; margin:0 auto 2rem; color:var(--text-dim); font-size:0.98rem; }
+
+  .pins-contact{ display:flex; flex-wrap:wrap; justify-content:center; gap:1.6rem; }
+  .pin-item{
+    font-family:var(--mono); font-size:0.82rem; color:var(--text-dim);
+    padding-top:0.6rem; border-top:1.5px solid var(--line-bright); min-width:100px;
+  }
+  .pin-item b{
+    display:block; font-family:var(--sans); font-weight:500;
+    color:var(--text); font-size:0.86rem; margin-top:0.2rem;
+  }
+
+  section.block{ padding:4.5rem 0; border-top:1px solid var(--line); }
+
+  /* ---------- orbit layout ---------- */
+  .orbit-wrap{
+    position:relative;
+    --scale:1;
+    width:calc((var(--radius) * var(--scale) + var(--chip-r)) * 2);
+    height:calc((var(--radius) * var(--scale) + var(--chip-r)) * 2);
+    margin:0 auto;
+  }
+
+  .orbit-wrap::before{
+    content:"";
+    position:absolute; top:50%; left:50%;
+    width:calc(var(--radius) * var(--scale) * 2);
+    height:calc(var(--radius) * var(--scale) * 2);
+    transform:translate(-50%,-50%);
+    border:1px dashed var(--line);
+    border-radius:50%;
+    pointer-events:none;
+  }
+
+  .orbit-center{
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    width:150px;
+    text-align:center;
+    pointer-events:none;
+    z-index:1;
+  }
+  .orbit-center h2{
+    font-family:var(--mono); font-weight:500;
+    font-size:0.98rem; letter-spacing:0.04em;
+    color:var(--white); margin:0; line-height:1.35;
+  }
+  .orbit-center span{
+    display:block; margin-top:0.4rem;
+    font-family:var(--mono); font-size:0.66rem;
+    color:var(--text-faint); letter-spacing:0.08em;
+  }
+
+  .orbit-ring{
+    position:absolute; inset:0;
+    animation:orbit-spin var(--dur) linear infinite;
+  }
+  .orbit-wrap.reverse .orbit-ring{ animation-direction:reverse; }
+
+  .orbit-ring:has(.orbit-card:hover) ,
+  .orbit-ring:has(.orbit-card:focus-within) ,
+  .orbit-ring:has(.orbit-card.active){
+    animation-play-state:paused;
+  }
+  .orbit-ring:has(.orbit-card:hover) .orbit-counter,
+  .orbit-ring:has(.orbit-card:focus-within) .orbit-counter,
+  .orbit-ring:has(.orbit-card.active) .orbit-counter{
+    animation-play-state:paused;
+  }
+
+  @keyframes orbit-spin{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
+
+  .orbit-item{
+    position:absolute; top:50%; left:50%;
+    transform-origin:0 0;
+    transform:rotate(var(--angle)) translateX(calc(var(--radius) * var(--scale)));
+  }
+
+  .orbit-counter{
+    position:absolute; top:0; left:0;
+    animation:counter-spin var(--dur) linear infinite;
+  }
+  .orbit-wrap.reverse .orbit-counter{ animation-direction:reverse; }
+
+  @keyframes counter-spin{
+    from{ transform:translate(-50%,-50%) rotate(calc(-1 * var(--angle))); }
+    to{ transform:translate(-50%,-50%) rotate(calc(-1 * var(--angle) - 360deg)); }
+  }
+
+  .orbit-card{
+    position:relative;
+    width:var(--chip-w);
+    padding:0.55rem 0.85rem;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:20px;
+    text-align:center;
+    cursor:pointer;
+    transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease, background .3s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .orbit-card .title{
+    font-family:var(--sans); font-weight:600; font-size:0.76rem;
+    color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    display:block;
+  }
+  .orbit-card .meta{
+    font-family:var(--mono); font-size:0.6rem; color:var(--text-faint);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; margin-top:0.15rem;
+  }
+
+  .orbit-card:hover,
+  .orbit-card:focus-within,
+  .orbit-card.active{
+    transform:scale(1.22);
+    border-color:var(--line-bright);
+    background:var(--bg-alt);
+    box-shadow:0 18px 38px -16px rgba(255,255,255,0.22);
+    z-index:5;
+  }
+  .orbit-card:hover .title,
+  .orbit-card:focus-within .title,
+  .orbit-card.active .title{ white-space:normal; }
+
+  .orbit-panel{
     position:absolute;
-    left:18px; right:18px;
-    height:1px;
-    background-image:repeating-linear-gradient(to right, var(--ink) 0 6px, transparent 6px 15px);
+    top:100%; left:50%;
+    transform:translate(-50%,8px);
+    width:230px;
+    background:var(--bg-alt);
+    border:1px solid var(--line-bright);
+    border-radius:6px;
+    padding:0.9rem 1rem;
+    text-align:left;
+    opacity:0; pointer-events:none;
+    transition:opacity .28s ease, transform .28s ease;
+    z-index:6;
   }
-  .chip::before{ top:7px; }
-  .chip::after{ bottom:7px; }
-
-  .chip .tag{
-    display:inline-block;
-    color:var(--gray-mid);
-    margin-bottom:10px;
-  }
-  .chip h3{
-    font-size:1.08rem;
-    font-weight:600;
-    margin:0 0 6px;
-    line-height:1.3;
-  }
-  .chip .org{
-    color:var(--gray-mid);
-    font-size:0.92rem;
-  }
-  .chip .year{
-    position:absolute;
-    top:22px; right:20px;
+  .orbit-card:hover .orbit-panel,
+  .orbit-card:focus-within .orbit-panel,
+  .orbit-card.active .orbit-panel{
+    opacity:1; pointer-events:auto;
+    transform:translate(-50%,14px);
   }
 
-  .chip .reveal{
-    position:absolute;
-    inset:0;
-    background:var(--ink);
-    color:var(--paper);
-    padding:22px;
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-    transform:translateY(100%);
-    transition:transform .35s cubic-bezier(.4,0,.2,1);
+  .orbit-panel-inner{ display:flex; gap:0.8rem; align-items:flex-start; }
+  ul.node-desc{ margin:0; padding-left:1rem; color:var(--text-dim); font-size:0.78rem; flex:1 1 auto; }
+  ul.node-desc li{ margin-bottom:0.35rem; }
+  ul.node-desc li:last-child{ margin-bottom:0; }
+
+  .img-slot{
+    flex:none; width:64px; height:64px;
+    border:1px dashed var(--line-bright); border-radius:2px;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--text-faint); font-family:var(--mono); font-size:0.56rem; text-align:center;
+    background:linear-gradient(45deg, transparent 48%, var(--line) 49%, var(--line) 51%, transparent 52%);
+    background-size:9px 9px;
   }
-  .chip:hover .reveal,
-  .chip.active .reveal{ transform:translateY(0); }
 
-  .reveal .r-title{ font-weight:600; font-size:1rem; }
-  .reveal p{ margin:0; font-size:0.92rem; color:#e6e6e6; line-height:1.55; }
+  /* ---------- responsive scale for orbits ---------- */
+  @media (max-width:760px){ .orbit-wrap{ --scale:0.68; } .orbit-card{ --chip-w:96px; } .orbit-panel{ width:190px; } }
+  @media (max-width:480px){ .orbit-wrap{ --scale:0.5; } .orbit-card{ --chip-w:82px; } .orbit-panel{ width:170px; } .img-slot{ width:52px; height:52px; } }
 
-  .photo-slot{
-    border:1px dashed #6b6b6b;
-    flex:1;
-    min-height:56px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    color:#8c8c8c;
-    font-size:0.8rem;
+  /* ---------- skills section (tag style) ---------- */
+  .skills-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:1.6rem; margin-top:1.8rem; }
+  .skills-cat h4{ font-family:var(--mono); font-size:0.78rem; letter-spacing:0.05em; color:var(--text-faint); margin:0 0 0.85rem; }
+  .tag-row{ display:flex; flex-wrap:wrap; gap:0.55rem; }
+  .tag{
+    font-family:var(--mono); font-size:0.78rem; color:var(--text-dim);
+    border:1px solid var(--line); padding:0.35rem 0.7rem; border-radius:2px;
+    transition:border-color .25s ease, color .25s ease, transform .25s ease;
   }
-  .photo-slot svg{ width:16px; height:16px; opacity:.8; }
+  .tag:hover{ border-color:var(--line-bright); color:var(--text); transform:translateY(-2px); }
 
-  /* skills card variant: no reveal image, just tag list */
-  .chip.skill .reveal{ justify-content:center; }
-  .skill-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
-  .skill-list li{ font-size:0.92rem; }
-
-  @media (prefers-reduced-motion: reduce){
-    .chip .reveal{ transition:none; }
-    section.hero{ animation:none; opacity:1; }
+  h2.section-title-plain{
+    font-family:var(--mono); font-weight:500; font-size:1.05rem;
+    letter-spacing:0.05em; color:var(--white); margin:0 0 0.5rem;
   }
 
   footer{
-    padding:70px 0 60px;
-    color:var(--gray-mid);
-    font-size:0.85rem;
-    border-top:1px solid var(--gray-line);
-    margin-top:60px;
+    padding:2.6rem 0 3.5rem; text-align:center; color:var(--text-faint);
+    font-family:var(--mono); font-size:0.72rem; letter-spacing:0.04em;
   }
 
-  @media (max-width:600px){
-    .edu-item{ flex-direction:column; }
-    .edu-item .grades{ text-align:left; }
+  @media (prefers-reduced-motion: reduce){
+    .orbit-ring, .orbit-counter{ animation:none !important; }
+    .orbit-card{ transition:none !important; }
   }
+
+  ::selection{ background:var(--line-bright); color:var(--white); }
 </style>
 </head>
 <body>
 
-<nav class="index" aria-hidden="true">
-  <a href="#intro" title="Intro"></a>
-  <a href="#education" title="Education"></a>
-  <a href="#honors" title="Honors"></a>
-  <a href="#leadership" title="Leadership"></a>
-  <a href="#service" title="Community Service"></a>
-  <a href="#enrichment" title="Academic Enrichment"></a>
-  <a href="#project" title="Personal Project"></a>
-  <a href="#skills" title="Skills"></a>
-</nav>
+<div class="circuit-bg" aria-hidden="true">
+  <svg viewBox="0 0 1200 1600" preserveAspectRatio="xMidYMin slice" xmlns="http://www.w3.org/2000/svg">
+    <g stroke="#3a3a3d" stroke-width="1" fill="none">
+      <path d="M0 120 H180 V260 H420 V80 H700"/>
+      <path d="M1200 220 H980 V420 H760"/>
+      <path d="M0 520 H260 V640 H60 V820 H340"/>
+      <path d="M1200 640 H900 V860 H1080 V1040"/>
+      <path d="M0 980 H200 V1160 H480"/>
+      <path d="M1200 1180 H960 V1360 H1200"/>
+      <path d="M0 1380 H240 V1560 H520"/>
+      <path d="M760 1600 V1440 H1000 V1260"/>
+    </g>
+    <g fill="#3a3a3d">
+      <circle cx="180" cy="120" r="3"/><circle cx="420" cy="260" r="3"/>
+      <circle cx="980" cy="220" r="3"/><circle cx="760" cy="420" r="3"/>
+      <circle cx="260" cy="520" r="3"/><circle cx="60" cy="820" r="3"/>
+      <circle cx="900" cy="640" r="3"/><circle cx="1080" cy="1040" r="3"/>
+      <circle cx="200" cy="980" r="3"/><circle cx="480" cy="1160" r="3"/>
+      <circle cx="960" cy="1180" r="3"/><circle cx="1000" cy="1260" r="3"/>
+      <circle cx="240" cy="1380" r="3"/><circle cx="520" cy="1560" r="3"/>
+    </g>
+  </svg>
+</div>
 
-<div class="wrap">
+<div class="page">
+  <div class="wrap">
 
-  <!-- INTRO -->
-  <section class="hero" id="intro">
-    <h1>Le Dao Trung Hieu</h1>
-    <div class="contact mono">
-      <span>Ho Chi Minh City, Vietnam</span>
-      <span>+84 989 415 751</span>
-      <span>trunghieu18122009@gmail.com</span>
-    </div>
-
-    <svg class="trace" viewBox="0 0 600 26" preserveAspectRatio="none">
-      <path d="M0 13 H180 V4 H420 V22 H600" />
-      <circle cx="180" cy="13" r="3.5" />
-      <circle cx="420" cy="4" r="3.5" />
-      <circle cx="420" cy="22" r="3.5" />
-    </svg>
-
-    <p class="bio">High school student with a strong record of academic engagement, athletics, leadership, and community service.</p>
-    <p class="target">Seeking admission to study <b>Electrical Engineering</b>.</p>
-  </section>
-
-  <!-- EDUCATION (kept simple, no color) -->
-  <section id="education">
-    <div class="section-head">
-      <h2>Education</h2>
-    </div>
-
-    <div class="edu-item">
-      <div>
-        <div class="school">Nguyen Thuong Hien High School</div>
-        <div class="meta">Ho Chi Minh City &nbsp;·&nbsp; Grade 12 &nbsp;·&nbsp; Expected 2027</div>
-      </div>
-      <div class="grades mono">
-        <div>Grade 11 GPA: 9.4 (2026)</div>
-        <div>Grade 10 GPA: 9.0 (2025)</div>
-      </div>
-    </div>
-
-    <div class="edu-item">
-      <div>
-        <div class="school">Tran Quang Khai Middle School</div>
-        <div class="meta">Ho Chi Minh City &nbsp;·&nbsp; Grade 9 &nbsp;·&nbsp; 2024</div>
-      </div>
-      <div class="grades mono">
-        <div>GPA: 9.0</div>
-      </div>
-    </div>
-
-    <div class="tests">
-      <div>
-        <span class="mono t-label">IELTS</span>
-        <span class="t-score">7.5</span>
-      </div>
-      <div>
-        <span class="mono t-label">SAT</span>
-        <span class="t-score">1450</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- HONORS & AWARDS -->
-  <section id="honors">
-    <div class="section-head">
-      <h2>Honors &amp; Awards</h2>
-      <span class="mono count">2</span>
-    </div>
-    <div class="grid">
-
+    <header class="hero">
       <div class="chip">
-        <span class="tag mono">Academic Achievement</span>
-        <span class="year mono">2026</span>
-        <h3>IAMO</h3>
-        <div class="org">Recognition</div>
-        <div class="reveal">
-          <div class="r-title">IAMO — 2026</div>
-          <p>Received an academic acceptance and recognition letter.</p>
-          <div class="photo-slot">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="18" height="13" rx="1"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6 L9.5 3.5 H14.5 L16 6"/></svg>
-            Add photo later
+        <span class="pinrow top"><span></span><span></span><span></span><span></span><span></span><span></span></span>
+        <div class="eyebrow-tag">HIGH SCHOOL &nbsp;·&nbsp; EXPECTED GRAD. 2027</div>
+        <h1 class="name">LE DAO TRUNG HIEU</h1>
+        <p class="tagline">
+          High school student with a strong academic foundation and a growing passion for
+          physics, electronics, and engineering, aspiring to pursue Electrical and Electronics
+          Engineering and develop technology-driven solutions to real-world challenges.
+        </p>
+        <div class="pins-contact">
+          <div class="pin-item">LOCATION<b>Ho Chi Minh City, Vietnam</b></div>
+          <div class="pin-item">PHONE<b>+84 989 415 751</b></div>
+          <div class="pin-item">EMAIL<b>trunghieu18122009@gmail.com</b></div>
+        </div>
+        <span class="pinrow bottom"><span></span><span></span><span></span><span></span><span></span><span></span></span>
+      </div>
+    </header>
+
+    <!-- ============ EDUCATION ============ -->
+    <section class="block" id="education">
+      <div class="orbit-wrap" style="--radius:120px; --chip-r:60px; --dur:34s;">
+        <div class="orbit-center"><h2>EDUCATION</h2><span>2 mục</span></div>
+        <div class="orbit-ring">
+
+          <div class="orbit-item" style="--angle:0deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:130px;" tabindex="0">
+                <span class="title">Nguyen Thuong Hien High School</span>
+                <span class="meta">2027</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Grade 11 GPA: 9.4/10 (2026)</li>
+                    <li>Grade 10 GPA: 9.0/10 (2025)</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="orbit-item" style="--angle:180deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:130px;" tabindex="0">
+                <span class="title">Tran Quang Khai Middle School</span>
+                <span class="meta">2024</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc"><li>Grade 9 GPA: 9.2/10</li></ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STANDARDIZED TESTS ============ -->
+    <section class="block" id="tests">
+      <div class="orbit-wrap reverse" style="--radius:120px; --chip-r:60px; --dur:30s;">
+        <div class="orbit-center"><h2>STANDARDIZED<br>TESTS</h2><span>2 mục</span></div>
+        <div class="orbit-ring">
+
+          <div class="orbit-item" style="--angle:0deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:130px;" tabindex="0">
+                <span class="title">IELTS — 7.5</span>
+                <span class="meta">Academic</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Reading: 8.5</li><li>Listening: 8.0</li>
+                    <li>Writing: 6.5</li><li>Speaking: 6.0</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="orbit-item" style="--angle:180deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:130px;" tabindex="0">
+                <span class="title">SAT — 1460</span>
+                <span class="meta">Composite</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc"><li>Verbal: 680</li><li>Math: 780</li></ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HONORS & AWARDS ============ -->
+    <section class="block" id="honors">
+      <div class="orbit-wrap" style="--radius:130px; --chip-r:65px; --dur:32s;">
+        <div class="orbit-center"><h2>HONORS &amp;<br>AWARDS</h2><span>2 mục</span></div>
+        <div class="orbit-ring">
+
+          <div class="orbit-item" style="--angle:0deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">IAMO — Mathematics</span>
+                <span class="meta">Final Round · 2026</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Qualified for the Final Round of IAMO 2026 after successfully advancing through the preliminary round, demonstrating strong mathematical proficiency, logical reasoning, and problem-solving skills.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="orbit-item" style="--angle:180deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">IACHO — Chemistry</span>
+                <span class="meta">Final Round · 2026</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Passed the Preliminary and Semi-Final Rounds of the International Applied Chemistry Olympiad (IACHO) 2026 and was officially selected for the Final Round, held in Bandung, Indonesia, September 24–27, 2026.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LEADERSHIP & COMMUNITY IMPACT ============ -->
+    <section class="block" id="leadership">
+      <div class="orbit-wrap reverse" style="--radius:160px; --chip-r:65px; --dur:44s;">
+        <div class="orbit-center"><h2>LEADERSHIP &amp;<br>COMMUNITY</h2><span>5 mục</span></div>
+        <div class="orbit-ring">
+
+          <div class="orbit-item" style="--angle:0deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">Mid-Autumn Festival — Se Dang</span>
+                <span class="meta">Project Leader · 2026</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Led a Mid-Autumn Festival initiative serving more than 650 children in a Se Dang ethnic minority community.</li>
+                    <li>Coordinated volunteers, budgeting, logistics, meals, gifts, and educational and creative activities.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="orbit-item" style="--angle:72deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">Ánh Bình Minh Tây Nguyên</span>
+                <span class="meta">Project Member · 2026</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Contributed to an initiative expanding access to educational support for ethnic minority students in the Central Highlands, including Ede and Jarai communities.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="orbit-item" style="--angle:144deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">Gia Lai Mobile Clinic</span>
+                <span class="meta">Volunteer · 2026</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Supported online communications and recurring mobile-clinic activities providing healthcare services and community assistance to ethnic minority communities.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="orbit-item" style="--angle:216deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">Red Flamboyant Campaign</span>
+                <span class="meta">Participant · 2026</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Supported local ward activities, summer programs for children, and community-service and charitable initiatives.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="orbit-item" style="--angle:288deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">MAERSK Charity Marathon</span>
+                <span class="meta">Volunteer · 2026</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Participated in a charity marathon supporting fundraising for community-focused charitable initiatives.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STEM, RESEARCH & ACADEMIC ENRICHMENT ============ -->
+    <section class="block" id="stem">
+      <div class="orbit-wrap" style="--radius:190px; --chip-r:65px; --dur:52s;">
+        <div class="orbit-center"><h2>STEM &amp;<br>RESEARCH</h2><span>7 mục</span></div>
+        <div class="orbit-ring">
+
+          <div class="orbit-item" style="--angle:0deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">Student Focus &amp; Attention</span>
+                <span class="meta">Founder · 2026–Present</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Developing an independent project exploring concentration and attention during studying and practical approaches to improve students' focus and learning effectiveness.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="orbit-item" style="--angle:51.4deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">Samsung Solve for Tomorrow</span>
+                <span class="meta">National · 2026</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Completed a STEM innovation program covering design thinking, AI, IoT, and problem-solving, with a focus on solutions to real-world community challenges.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="orbit-item" style="--angle:102.8deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">Introduction to Devices</span>
+                <span class="meta">KAIST · 2026</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Studied semiconductor devices, electronic components, and fundamental engineering concepts.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="orbit-item" style="--angle:154.2deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">Introductory Programming</span>
+                <span class="meta">Microsoft · 2026</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Studied coding fundamentals, algorithms, problem-solving, and basic software-development concepts.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="orbit-item" style="--angle:205.6deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">Introductory Data Course</span>
+                <span class="meta">Google · 2026</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Studied fundamental data concepts, data-analysis processes, and basic analytical thinking.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="orbit-item" style="--angle:257deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">Water Rocket Competition</span>
+                <span class="meta">Team Member · 2025</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Designed, built, and tested a water rocket, using iterative testing to improve flight performance and target accuracy.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="orbit-item" style="--angle:308.4deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">UNESCO Culture Education</span>
+                <span class="meta">Participant · 2026</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Participated in a cultural education program focused on cultural awareness, intercultural understanding, and education.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SCHOOL & EXTRACURRICULAR ACTIVITIES ============ -->
+    <section class="block" id="activities">
+      <div class="orbit-wrap reverse" style="--radius:140px; --chip-r:65px; --dur:38s;">
+        <div class="orbit-center"><h2>SCHOOL &amp;<br>ACTIVITIES</h2><span>4 mục</span></div>
+        <div class="orbit-ring">
+
+          <div class="orbit-item" style="--angle:0deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">Lightning Cheerleading Team</span>
+                <span class="meta">Team Member · 2025</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Performed at school athletic events and developed teamwork, discipline, and performance skills through team practices and routines.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="orbit-item" style="--angle:90deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">School Annual Dance Competition</span>
+                <span class="meta">Performer · 2025</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Represented the class in the annual dance competition and collaborated with teammates to rehearse and perform choreographed routines.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="orbit-item" style="--angle:180deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">Class Food Stall</span>
+                <span class="meta">School Camp · 2025</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Helped plan, build, and operate the class food stall during the annual school camp.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="orbit-item" style="--angle:270deg;">
+            <div class="orbit-counter">
+              <div class="orbit-card" style="--chip-w:150px;" tabindex="0">
+                <span class="title">CMD Education Fair</span>
+                <span class="meta">Student Leader · 2026</span>
+                <div class="orbit-panel"><div class="orbit-panel-inner">
+                  <ul class="node-desc">
+                    <li>Supported event organization and coordination; received a Certificate of Appreciation for outstanding leadership, dedication, and enthusiasm.</li>
+                  </ul>
+                  <div class="img-slot"><span>+ image</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SKILLS & INTERESTS ============ -->
+    <section class="block" id="skills">
+      <h2 class="section-title-plain">Skills &amp; Interests</h2>
+      <div class="skills-grid">
+        <div class="skills-cat">
+          <h4>ACADEMIC INTERESTS</h4>
+          <div class="tag-row">
+            <span class="tag">Physics</span>
+            <span class="tag">Electronics</span>
+            <span class="tag">Mathematics</span>
+            <span class="tag">Engineering</span>
+            <span class="tag">AI / Data</span>
+          </div>
+        </div>
+        <div class="skills-cat">
+          <h4>ACTIVITIES</h4>
+          <div class="tag-row">
+            <span class="tag">Cheerleading</span>
+            <span class="tag">Table Tennis</span>
+            <span class="tag">Dance</span>
+            <span class="tag">Community Service</span>
+            <span class="tag">Event Support</span>
+            <span class="tag">Teamwork</span>
           </div>
         </div>
       </div>
+    </section>
 
-      <div class="chip">
-        <span class="tag mono">Academic Achievement</span>
-        <span class="year mono">2026</span>
-        <h3>IACHO</h3>
-        <div class="org">Acceptance</div>
-        <div class="reveal">
-          <div class="r-title">IACHO — 2026</div>
-          <p>Received an academic acceptance and recognition letter.</p>
-          <div class="photo-slot">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="18" height="13" rx="1"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6 L9.5 3.5 H14.5 L16 6"/></svg>
-            Add photo later
-          </div>
-        </div>
-      </div>
+    <footer>LE DAO TRUNG HIEU · HO CHI MINH CITY, VIETNAM</footer>
 
-    </div>
-  </section>
-
-  <!-- LEADERSHIP & EXPERIENCE -->
-  <section id="leadership">
-    <div class="section-head">
-      <h2>Leadership &amp; Experience</h2>
-      <span class="mono count">2</span>
-    </div>
-    <div class="grid">
-
-      <div class="chip">
-        <span class="tag mono">Program</span>
-        <span class="year mono">2026</span>
-        <h3>UNESCO Culture Education Program</h3>
-        <div class="org">Participant</div>
-        <div class="reveal">
-          <div class="r-title">UNESCO Culture Education Program — 2026</div>
-          <p>Details to be added.</p>
-          <div class="photo-slot">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="18" height="13" rx="1"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6 L9.5 3.5 H14.5 L16 6"/></svg>
-            Add photo later
-          </div>
-        </div>
-      </div>
-
-      <div class="chip">
-        <span class="tag mono">Leader</span>
-        <span class="year mono">2026</span>
-        <h3>Mid Autumn Festival</h3>
-        <div class="org">Leader</div>
-        <div class="reveal">
-          <div class="r-title">Mid Autumn Festival — Leader — 2026</div>
-          <p>Led a volunteer initiative in Pleiku providing meals and gifts to children, while organizing educational and creative workshops. Coordinated volunteers, logistics, budgeting, and event activities to ensure smooth execution.</p>
-          <div class="photo-slot">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="18" height="13" rx="1"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6 L9.5 3.5 H14.5 L16 6"/></svg>
-            Add photo later
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- COMMUNITY SERVICE & ACTIVITIES -->
-  <section id="service">
-    <div class="section-head">
-      <h2>Community Service &amp; Activities</h2>
-      <span class="mono count">2</span>
-    </div>
-    <div class="grid">
-
-      <div class="chip">
-        <span class="tag mono">Community Service</span>
-        <span class="year mono">2026</span>
-        <h3>Red Flamboyant Campaign</h3>
-        <div class="org">Participant</div>
-        <div class="reveal">
-          <div class="r-title">Red Flamboyant Campaign — 2026</div>
-          <p>Supported local ward activities, organized summer programs for children, and participated in community service and charitable initiatives.</p>
-          <div class="photo-slot">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="18" height="13" rx="1"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6 L9.5 3.5 H14.5 L16 6"/></svg>
-            Add photo later
-          </div>
-        </div>
-      </div>
-
-      <div class="chip">
-        <span class="tag mono">Community Volunteer</span>
-        <span class="year mono">2026</span>
-        <h3>MAERSK</h3>
-        <div class="org">Charity Marathon</div>
-        <div class="reveal">
-          <div class="r-title">MAERSK — 2026</div>
-          <p>Participated in a charity marathon to raise funds for community projects; completed the race while supporting local charitable initiatives.</p>
-          <div class="photo-slot">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="18" height="13" rx="1"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6 L9.5 3.5 H14.5 L16 6"/></svg>
-            Add photo later
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ACADEMIC ENRICHMENT -->
-  <section id="enrichment">
-    <div class="section-head">
-      <h2>Academic Enrichment</h2>
-      <span class="mono count">4</span>
-    </div>
-    <div class="grid">
-
-      <div class="chip">
-        <span class="tag mono">STEM Program</span>
-        <span class="year mono">2026</span>
-        <h3>Samsung Solve for Tomorrow</h3>
-        <div class="org">Completed</div>
-        <div class="reveal">
-          <div class="r-title">Samsung Solve for Tomorrow — 2026</div>
-          <p>Completed Samsung's STEM innovation program; studied design thinking, AI, IoT, and problem-solving; developed solutions for real-world community challenges.</p>
-          <div class="photo-slot">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="18" height="13" rx="1"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6 L9.5 3.5 H14.5 L16 6"/></svg>
-            Add photo later
-          </div>
-        </div>
-      </div>
-
-      <div class="chip">
-        <span class="tag mono">Devices Course</span>
-        <span class="year mono">2026</span>
-        <h3>KAIST</h3>
-        <div class="org">Introduction to Devices</div>
-        <div class="reveal">
-          <div class="r-title">Korea Advanced Institute of Science and Technology — 2026</div>
-          <p>Completed KAIST's Introduction to Devices course, exploring semiconductor devices, electronic components, and fundamental engineering concepts.</p>
-          <div class="photo-slot">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="18" height="13" rx="1"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6 L9.5 3.5 H14.5 L16 6"/></svg>
-            Add photo later
-          </div>
-        </div>
-      </div>
-
-      <div class="chip">
-        <span class="tag mono">Programming</span>
-        <span class="year mono">2026</span>
-        <h3>Microsoft</h3>
-        <div class="org">Intro Programming Course</div>
-        <div class="reveal">
-          <div class="r-title">Microsoft — 2026</div>
-          <p>Completed Microsoft's introductory programming course, learning coding fundamentals, algorithms, problem-solving, and basic software development concepts.</p>
-          <div class="photo-slot">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="18" height="13" rx="1"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6 L9.5 3.5 H14.5 L16 6"/></svg>
-            Add photo later
-          </div>
-        </div>
-      </div>
-
-      <div class="chip">
-        <span class="tag mono">Data</span>
-        <span class="year mono">2026</span>
-        <h3>Google</h3>
-        <div class="org">Intro Data Analytics</div>
-        <div class="reveal">
-          <div class="r-title">Google — 2026</div>
-          <p>Completed Google's introductory course covering fundamental data concepts, data analysis processes, and basic analytical thinking.</p>
-          <div class="photo-slot">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="18" height="13" rx="1"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6 L9.5 3.5 H14.5 L16 6"/></svg>
-            Add photo later
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- PERSONAL PROJECT -->
-  <section id="project">
-    <div class="section-head">
-      <h2>Personal Project</h2>
-      <span class="mono count">1</span>
-    </div>
-    <div class="grid">
-
-      <div class="chip">
-        <span class="tag mono">Academic Project</span>
-        <span class="year mono">2026</span>
-        <h3>Personal Academic Project</h3>
-        <div class="org">Upcoming</div>
-        <div class="reveal">
-          <div class="r-title">Personal Academic Project — Upcoming 2026</div>
-          <p>In process — will be updated in October 2026.</p>
-          <div class="photo-slot">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="18" height="13" rx="1"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6 L9.5 3.5 H14.5 L16 6"/></svg>
-            Add photo later
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- SKILLS & INTERESTS -->
-  <section id="skills">
-    <div class="section-head">
-      <h2>Skills &amp; Interests</h2>
-      <span class="mono count">3</span>
-    </div>
-    <div class="grid skills">
-
-      <div class="chip skill">
-        <span class="tag mono">Category</span>
-        <h3>Athletics</h3>
-        <div class="org">Physical activities</div>
-        <div class="reveal">
-          <ul class="skill-list">
-            <li>Cheerleading</li>
-            <li>Table tennis</li>
-            <li>Dance</li>
-          </ul>
-          <div class="photo-slot">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="18" height="13" rx="1"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6 L9.5 3.5 H14.5 L16 6"/></svg>
-            Add photo later
-          </div>
-        </div>
-      </div>
-
-      <div class="chip skill">
-        <span class="tag mono">Category</span>
-        <h3>Leadership &amp; Service</h3>
-        <div class="org">Interpersonal skills</div>
-        <div class="reveal">
-          <ul class="skill-list">
-            <li>Event support</li>
-            <li>Community service</li>
-            <li>Teamwork</li>
-          </ul>
-          <div class="photo-slot">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="18" height="13" rx="1"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6 L9.5 3.5 H14.5 L16 6"/></svg>
-            Add photo later
-          </div>
-        </div>
-      </div>
-
-      <div class="chip skill">
-        <span class="tag mono">Category</span>
-        <h3>Academic Interests</h3>
-        <div class="org">Fields of curiosity</div>
-        <div class="reveal">
-          <ul class="skill-list">
-            <li>Physics</li>
-            <li>Electronics</li>
-            <li>Math</li>
-          </ul>
-          <div class="photo-slot">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="18" height="13" rx="1"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6 L9.5 3.5 H14.5 L16 6"/></svg>
-            Add photo later
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <footer class="mono">
-    Le Dao Trung Hieu &nbsp;·&nbsp; Portfolio prepared for university application
-  </footer>
-
+  </div>
 </div>
 
 <script>
-  // touch-friendly toggle for chips (hover doesn't exist on touch devices)
-  document.querySelectorAll('.chip').forEach(function(chip){
-    chip.addEventListener('click', function(){
+  // Cho phép chạm (tap) để mở/đóng thẻ trên thiết bị cảm ứng (không có hover)
+  document.querySelectorAll('.orbit-card').forEach(function(card){
+    card.addEventListener('click', function(e){
       if (window.matchMedia('(hover: none)').matches){
-        var wasActive = chip.classList.contains('active');
-        document.querySelectorAll('.chip.active').forEach(function(c){ c.classList.remove('active'); });
-        if (!wasActive) chip.classList.add('active');
+        var isActive = card.classList.contains('active');
+        document.querySelectorAll('.orbit-card.active').forEach(function(c){
+          if (c !== card) c.classList.remove('active');
+        });
+        card.classList.toggle('active', !isActive);
       }
     });
   });
-
-  // side index highlight
-  var links = document.querySelectorAll('.index a');
-  var sections = Array.from(links).map(function(l){ return document.querySelector(l.getAttribute('href')); });
-  function onScroll(){
-    var pos = window.scrollY + window.innerHeight/2.5;
-    var current = 0;
-    sections.forEach(function(sec, i){
-      if (sec && sec.offsetTop <= pos) current = i;
-    });
-    links.forEach(function(l, i){ l.classList.toggle('on', i === current); });
-  }
-  document.addEventListener('scroll', onScroll);
-  onScroll();
+  document.addEventListener('click', function(e){
+    if (!e.target.closest('.orbit-card') && window.matchMedia('(hover: none)').matches){
+      document.querySelectorAll('.orbit-card.active').forEach(function(c){ c.classList.remove('active'); });
+    }
+  });
 </script>
 
 </body>
