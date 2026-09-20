@@ -1,90 +1,1167 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Le Dao Trung Hieu — Interactive Donut Portfolio</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif'],mono:['JetBrains Mono','monospace']},colors:{bg:'#050506',panel:'#111113',border:'#2a2a2d',accent:'#4c4c50'}}}};</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Le Dao Trung Hieu — Portfolio</title>
 <style>
-body{background:#050506;color:#f2f2f2;overflow:hidden}.wheel-stage{transition:transform .7s cubic-bezier(.22,1,.36,1),opacity .5s ease}.layout-centered .wheel-stage{transform:translateX(0) scale(1)}.layout-shifted .wheel-stage{transform:translateX(-22vw) scale(.78)}.detail-panel{transition:transform .6s cubic-bezier(.22,1,.36,1),opacity .5s ease}.layout-centered .detail-panel{transform:translateX(100%);opacity:0;pointer-events:none}.layout-shifted .detail-panel{transform:translateX(0);opacity:1;pointer-events:auto}@keyframes wheel-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}.spin-continuous{animation:wheel-spin 50s linear infinite;transform-origin:400px 400px}.wheel-segment{cursor:pointer;transition:filter .3s ease}.wheel-segment:hover{filter:brightness(1.25) drop-shadow(0 0 12px rgba(255,255,255,.2))}.item-label{pointer-events:none;user-select:none}.custom-scroll::-webkit-scrollbar{width:5px}.custom-scroll::-webkit-scrollbar-track{background:#111113}.custom-scroll::-webkit-scrollbar-thumb{background:#2a2a2d;border-radius:4px}.img-placeholder-pattern{background:linear-gradient(45deg,transparent 48%,#2a2a2d 49%,#2a2a2d 51%,transparent 52%);background-size:12px 12px}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --blue: #2563eb;
+    --blue-dark: #1e3a8a;
+    --blue-mid: #3b82f6;
+    --blue-light: #dbeafe;
+    --blue-pale: #eff6ff;
+    --black: #0f172a;
+    --gray: #64748b;
+    --gray-light: #94a3b8;
+    --border: #e2e8f0;
+    --white: #ffffff;
+    --bg: #f8fafc;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--black);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+    transition: all 0.65s cubic-bezier(.6,0,.2,1);
+  }
+
+  /* ============ DONUT STAGE ============ */
+  .donut-stage {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.65s cubic-bezier(.6,0,.2,1);
+    background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 75%);
+    overflow: hidden;
+  }
+
+  .app.detail-open .donut-stage {
+    flex: 0 0 40%;
+  }
+
+  .donut {
+    position: relative;
+    width: 820px;
+    height: 820px;
+    transition: transform 0.65s cubic-bezier(.6,0,.2,1);
+    flex-shrink: 0;
+  }
+
+  .app.detail-open .donut {
+    transform: scale(0.62);
+  }
+
+  .donut-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px dashed #cbd5e1;
+    animation: rotateRing 90s linear infinite;
+  }
+  .donut-ring-inner {
+    position: absolute;
+    inset: 130px;
+    border-radius: 50%;
+    border: 1px solid #e2e8f0;
+    opacity: 0.6;
+  }
+  @keyframes rotateRing {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ============ CENTER ============ */
+  .donut-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 400px;
+    height: 400px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: var(--white);
+    box-shadow:
+      0 0 0 10px var(--blue-pale),
+      0 0 0 11px var(--blue-light),
+      0 25px 70px rgba(37,99,235,0.18);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 44px 40px;
+    z-index: 5;
+    transition: all 0.4s ease;
+  }
+
+  .donut-center .avatar {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    letter-spacing: -1px;
+    flex-shrink: 0;
+    box-shadow: 0 8px 24px rgba(37,99,235,0.35);
+  }
+
+  .donut-center .name {
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--black);
+    line-height: 1.2;
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  .donut-center .role {
+    font-size: 11.5px;
+    color: var(--gray);
+    line-height: 1.6;
+    max-width: 310px;
+    margin-bottom: 12px;
+  }
+
+  .donut-center .contact {
+    font-size: 10px;
+    color: var(--blue);
+    line-height: 1.7;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+  }
+
+  .donut-center .divider {
+    width: 40px;
+    height: 2px;
+    background: var(--blue-light);
+    border-radius: 2px;
+    margin: 12px 0;
+  }
+
+  /* ============ SECTION NODES ============ */
+  .section-node {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 2px solid var(--blue-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 6px 20px rgba(15,23,42,0.07);
+    user-select: none;
+    z-index: 3;
+  }
+
+  .section-node:hover {
+    border-color: var(--blue);
+    transform: translate(var(--tx), var(--ty)) scale(1.1);
+    box-shadow: 0 16px 40px rgba(37,99,235,0.28);
+    z-index: 10;
+  }
+
+  .section-node.active {
+    background: var(--blue);
+    border-color: var(--blue-dark);
+    color: white;
+    box-shadow: 0 16px 44px rgba(37,99,235,0.45);
+  }
+
+  .section-node .icon {
+    font-size: 26px;
+    margin-bottom: 6px;
+    line-height: 1;
+  }
+
+  .section-node .label {
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: 0.2px;
+    color: var(--black);
+  }
+
+  .section-node .count {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--gray);
+    margin-top: 3px;
+    letter-spacing: 0.5px;
+  }
+
+  .section-node.active .label { color: white; }
+  .section-node.active .count { color: var(--blue-light); }
+
+  /* ============ ACHIEVEMENT NODES ============ */
+  .ach-node {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 130px;
+    height: 130px;
+    margin: -65px 0 0 -65px;
+    border-radius: 50%;
+    background: var(--blue-light);
+    border: 2px solid var(--blue);
+    color: var(--blue-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 12px;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1.25;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 4px 14px rgba(37,99,235,0.15);
+    z-index: 2;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(0,0) scale(0.3);
+    overflow: hidden;
+  }
+
+  .ach-node.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(var(--tx), var(--ty)) scale(1);
+  }
+
+  .ach-node:hover {
+    background: var(--blue);
+    color: white;
+    transform: translate(var(--tx), var(--ty)) scale(1.14);
+    z-index: 10;
+    box-shadow: 0 12px 30px rgba(37,99,235,0.35);
+  }
+
+  .ach-node.active {
+    background: var(--blue-dark);
+    color: white;
+    border-color: var(--blue-dark);
+    transform: translate(var(--tx), var(--ty)) scale(1.08);
+    box-shadow: 0 12px 32px rgba(30,58,138,0.5);
+  }
+
+  /* ============ DETAIL PANEL ============ */
+  .detail-panel {
+    flex: 0 0 0;
+    width: 0;
+    overflow: hidden;
+    background: var(--white);
+    border-left: 1px solid var(--border);
+    transition: all 0.65s cubic-bezier(.6,0,.2,1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .app.detail-open .detail-panel {
+    flex: 0 0 60%;
+    width: 60%;
+  }
+
+  .detail-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 70px 80px;
+    opacity: 0;
+    transition: opacity 0.45s ease 0.25s;
+  }
+
+  .app.detail-open .detail-scroll { opacity: 1; }
+
+  .detail-scroll::-webkit-scrollbar { width: 6px; }
+  .detail-scroll::-webkit-scrollbar-thumb {
+    background: var(--blue-light);
+    border-radius: 3px;
+  }
+  .detail-scroll::-webkit-scrollbar-track { background: transparent; }
+
+  .detail-close {
+    position: absolute;
+    top: 26px;
+    right: 30px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s;
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .app.detail-open .detail-close {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .detail-close:hover {
+    background: var(--blue);
+    color: white;
+    border-color: var(--blue);
+    transform: rotate(90deg);
+  }
+
+  .detail-tag {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 100px;
+    background: var(--blue-light);
+    color: var(--blue-dark);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+
+  .detail-title {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--black);
+    line-height: 1.12;
+    letter-spacing: -1px;
+    margin-bottom: 18px;
+  }
+
+  .detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    margin-bottom: 34px;
+    padding-bottom: 26px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .detail-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .detail-meta-item .k {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--gray);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
+
+  .detail-meta-item .v {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--black);
+  }
+
+  .detail-image {
+    width: 100%;
+    height: 300px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #60a5fa 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 80px;
+    margin-bottom: 36px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(37,99,235,0.25);
+  }
+
+    .detail-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: relative;
+  z-index: 1;
+}
+
+  .detail-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 25% 25%, rgba(255,255,255,0.18), transparent 55%),
+      radial-gradient(circle at 75% 75%, rgba(255,255,255,0.12), transparent 55%);
+  }
+
+  .detail-image span {
+    position: relative;
+    z-index: 1;
+  }
+
+  .detail-desc {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #334155;
+    margin-bottom: 28px;
+  }
+
+  .detail-bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .detail-bullets li {
+    position: relative;
+    padding-left: 28px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: #334155;
+  }
+
+  .detail-bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--blue);
+    box-shadow: 0 0 0 4px var(--blue-pale);
+  }
+
+  /* ============ HINT ============ */
+  .hint {
+    position: absolute;
+    bottom: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+    transition: opacity 0.3s;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    pointer-events: none;
+  }
+
+  .hint::before, .hint::after {
+    content: '';
+    width: 28px;
+    height: 1px;
+    background: #cbd5e1;
+  }
+
+  .app.detail-open .hint { opacity: 0; }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 1100px) {
+    .donut { width: 700px; height: 700px; }
+    .donut-center { width: 340px; height: 340px; padding: 34px 30px; }
+    .section-node { width: 125px; height: 125px; margin: -62px 0 0 -62px; }
+    .section-node .label { font-size: 10px; }
+    .section-node .icon { font-size: 22px; }
+  }
+
+  @media (max-width: 900px) {
+    .donut { width: 560px; height: 560px; }
+    .donut-center { width: 280px; height: 280px; padding: 26px 22px; }
+    .donut-center .name { font-size: 15px; }
+    .donut-center .role { font-size: 10px; }
+    .detail-scroll { padding: 50px 36px; }
+    .detail-title { font-size: 26px; }
+    .detail-image { height: 220px; font-size: 60px; }
+  }
 </style>
 </head>
-<body class="w-screen h-screen min-h-[700px] flex items-center justify-center relative font-sans bg-bg">
-<div class="fixed inset-0 pointer-events-none opacity-20 z-0"><svg width="100%" height="100%"><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="#ffffff" stroke-width="0.5"/></pattern><rect width="100%" height="100%" fill="url(#grid)"/></svg></div>
-<div id="app-viewport" class="w-full h-full relative flex items-center justify-center layout-centered z-10">
-<div class="wheel-stage absolute w-[800px] h-[800px] flex items-center justify-center flex-shrink-0">
-<div id="center-hub" class="absolute z-20 w-[420px] h-[420px] rounded-full bg-panel border border-border flex flex-col items-center justify-center text-center p-8 shadow-2xl backdrop-blur-md bg-opacity-95"></div>
-<svg width="800" height="800" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="absolute z-10 drop-shadow-2xl"><g id="wheel-group" class="spin-continuous"></g></svg>
-</div>
-<div class="detail-panel absolute right-0 top-0 h-full w-[90vw] sm:w-[450px] md:w-[500px] bg-panel border-l border-border z-30 shadow-2xl flex flex-col"><div class="p-6 md:p-8 flex-1 overflow-y-auto custom-scroll">
-<button id="btn-back-detail" class="mb-6 inline-flex items-center text-xs font-mono text-gray-400 hover:text-white transition-colors bg-bg/50 px-3 py-1.5 rounded-full border border-border"><svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>QUAY LẠI</button>
-<div id="detail-category-badge" class="font-mono text-[11px] tracking-widest uppercase text-gray-400 mb-2"></div><h2 id="detail-item-title" class="text-2xl font-bold font-sans text-white mb-2 leading-snug"></h2><div id="detail-item-meta" class="font-mono text-xs text-gray-400 mb-6 pb-4 border-b border-border"></div>
-<div class="w-full h-[220px] rounded-lg border border-border mb-6 flex items-center justify-center overflow-hidden relative bg-bg img-placeholder-pattern"><img id="detail-image" src="" alt="Detail Image" class="w-full h-full object-cover hidden" onerror="this.classList.add('hidden');document.getElementById('detail-image-fallback').classList.remove('hidden');"><iframe id="detail-pdf" src="" title="PDF Preview" class="w-full h-full hidden border-0 bg-white"></iframe><div id="detail-image-fallback" class="font-mono text-gray-500 text-xs tracking-wider flex flex-col items-center gap-1"><svg class="w-6 h-6 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><span>[ KHUNG ẢNH TRỐNG ]</span></div></div>
-<div id="detail-description" class="space-y-3 text-sm text-gray-300 font-sans leading-relaxed"></div>
-</div></div></div>
-<script>
-const portfolioData={personal:{name:'LE DAO TRUNG HIEU',eyebrow:'HIGH SCHOOL · GRADUATION 2027',tagline:'High school student with a strong academic foundation and passion for physics, electronics, and engineering, aspiring to pursue Electrical & Electronics Engineering.',location:'Ho Chi Minh City, Vietnam',phone:'+84 989 415 751',email:'trunghieu18122009@gmail.com',skills:['Physics','Electronics','Mathematics','AI / Data','Cheerleading','Community Service']},categories:[
-{id:'education',title:'Education',color:'#2563EB',items:[{title:'Nguyen Thuong Hien High School',meta:'Class of 2027',image:'',desc:['Grade 11 GPA: 9.4 / 10 (2026)','Grade 10 GPA: 9.0 / 10 (2025)','Focused on Physics, Advanced Mathematics, and STEM activities.']},{title:'Tran Quang Khai Middle School',meta:'Graduated 2024',image:'',desc:['Grade 9 GPA: 9.2 / 10','Consistently recognized as an outstanding academic achiever.']}]},
-{id:'tests',title:'Standardized Tests',color:'#7C3AED',items:[{title:'IELTS Academic — 7.5',meta:'Official Score',image:'',desc:['Reading: 8.5 | Listening: 8.0','Writing: 6.5 | Speaking: 6.0','Demonstrated high English fluency for academic research.']},{title:'SAT — 1460',meta:'Composite Score',image:'',desc:['Math Section: 780 / 800','Reading & Writing Section: 680 / 800']}]},
-{id:'honors',title:'Honors & Awards',color:'#D97706',items:[{title:'IAMO — Mathematics',meta:'Final Round · 2026',image:'images/IAMO.JPG',desc:['Qualified for the Final Round of IAMO 2026 after advancing through rigorous preliminary rounds.','Demonstrated strong logical reasoning and mathematical problem-solving.']},{title:'IACHO — Chemistry',meta:'Final Round · Bandung, Indonesia · 2026',image:'images/LOA.png',desc:['Selected for the International Final Round of International Applied Chemistry Olympiad (IACHO) 2026.','Participating in Bandung, Indonesia (Sept 24–27, 2026).']},{title:'ASMO — Science',meta:'Final Round · 2026',image:'',desc:['Asian Science and Mathematics Olympiad participant.','Results to be finalized.']}]},
-{id:'leadership',title:'Leadership & Community',color:'#059669',items:[{title:'Mid-Autumn Festival — Se Dang',meta:'Project Leader · 2026',image:'',desc:['Led a Mid-Autumn initiative serving over 650 children in a Se Dang ethnic minority community.','Coordinated volunteers, budgeting, logistics, meals, and educational activities.']},{title:'Ánh Bình Minh Tây Nguyên',meta:'Project Member · 2026',image:'',desc:['Contributed to expanding educational support for ethnic minority students in Central Highlands (Ede & Jarai communities).']},{title:'Gia Lai Mobile Clinic',meta:'Volunteer · 2026',image:'',desc:['Supported online communications & healthcare assistance for local minority villages.']},{title:'Red Flamboyant Campaign',meta:'Participant · 2026',image:'images/HPD.jpg',desc:['Supported summer youth programs, ward activities, and charitable local services.']},{title:'Smiling Chances',meta:'Volunteer · 2026',image:'images/Smiling chances.png',desc:['Participated in community outreach and charitable fundraising programs.']}]},
-{id:'stem',title:'STEM & Research',color:'#DC2626',items:[{title:'Student Focus & Attention',meta:'Founder · 2026–Present',image:'',desc:['Developing an independent research project exploring student concentration methods during study.']},{title:'Samsung Solve for Tomorrow',meta:'National Participant · 2026',image:'images/Solve for tomorrow.JPG',desc:['Completed STEM innovation training covering Design Thinking, AI, IoT, and community problem-solving.']},{title:'Intro to Semiconductor Devices',meta:'KAIST · 2026',image:'images/KAIST.pdf',desc:['Studied semiconductor devices, electronic components, and fundamental engineering concepts.']},{title:'Introductory Programming',meta:'Microsoft · 2026',image:'images/Microsoft.pdf',desc:['Mastered core algorithms, coding logic, and basic software development concepts.']},{title:'Introductory Data Course',meta:'Google · 2026',image:'images/Google.pdf',desc:['Studied data analytics processes, data structure basics, and quantitative thinking.']},{title:'Water Rocket Competition',meta:'Team Member · 2025',image:'',desc:['Designed, constructed, and launched pressurized water rockets using iterative aerodynamics testing.']}]},
-{id:'activities',title:'School & Activities',color:'#DB2777',items:[{title:'Lightning Cheerleading Team',meta:'Team Member · 2025',image:'',desc:['Performed at major school athletic events and honed physical coordination & teamwork.']},{title:'Annual Dance Competition',meta:'Performer · 2025',image:'',desc:['Represented class in choreographed performances for the annual festival.']},{title:'CMD Education Fair',meta:'Student Leader · 2026',image:'images/CMD.png',desc:['Organized and facilitated logistics; awarded Certificate of Appreciation for leadership.']}]}
-]};
-let appState={level:0,currentCategory:null,currentItem:null};
-const centerHub=document.getElementById('center-hub'),wheelGroup=document.getElementById('wheel-group'),appViewport=document.getElementById('app-viewport'),btnBackDetail=document.getElementById('btn-back-detail');
-const detailCategoryBadge=document.getElementById('detail-category-badge'),detailItemTitle=document.getElementById('detail-item-title'),detailItemMeta=document.getElementById('detail-item-meta'),detailImage=document.getElementById('detail-image'),detailPdf=document.getElementById('detail-pdf'),detailImageFallback=document.getElementById('detail-image-fallback'),detailDescription=document.getElementById('detail-description');
-const CENTER=400,R_OUTER=380,R_INNER=225;
-function polarToCartesian(cx,cy,r,a){const rad=(a-90)*Math.PI/180;return{x:cx+r*Math.cos(rad),y:cy+r*Math.sin(rad)}}
-function createDonutArc(startAngle,endAngle){const so=polarToCartesian(CENTER,CENTER,R_OUTER,startAngle),eo=polarToCartesian(CENTER,CENTER,R_OUTER,endAngle),si=polarToCartesian(CENTER,CENTER,R_INNER,startAngle),ei=polarToCartesian(CENTER,CENTER,R_INNER,endAngle),large=endAngle-startAngle<=180?'0':'1';return['M',so.x,so.y,'A',R_OUTER,R_OUTER,0,large,1,eo.x,eo.y,'L',ei.x,ei.y,'A',R_INNER,R_INNER,0,large,0,si.x,si.y,'Z'].join(' ')}
-function renderCenterHub(){if(appState.level===0){const p=portfolioData.personal;centerHub.innerHTML=`<span class="font-mono text-[10px] tracking-[0.2em] text-gray-400 uppercase border border-border px-3 py-1 rounded-full mb-3">${p.eyebrow}</span><h1 class="text-2xl font-bold font-mono text-white mb-2 tracking-tight">${p.name}</h1><p class="text-xs text-gray-300 font-sans line-clamp-3 mb-4 max-w-[340px] leading-relaxed">${p.tagline}</p><div class="w-full border-t border-border pt-3 mt-1 flex flex-col gap-1 text-[11px] font-mono text-gray-400"><div>📍 ${p.location}</div><div>✉️ ${p.email} | 📞 ${p.phone}</div></div><div class="mt-3 flex flex-wrap justify-center gap-1 max-w-[320px]">${p.skills.map(s=>`<span class="text-[9px] font-mono bg-bg border border-border text-gray-300 px-2 py-0.5 rounded">${s}</span>`).join('')}</div>`}else{const cat=appState.currentCategory;centerHub.innerHTML=`<div class="w-12 h-12 rounded-full mb-3 flex items-center justify-center text-white font-mono text-lg font-bold border-2 border-panel shadow-md" style="background-color:${cat.color}">${cat.title.charAt(0)}</div><span class="font-mono text-[10px] tracking-widest text-gray-500 uppercase mb-1">MỤC ĐÃ CHỌN</span><h2 class="text-2xl font-bold font-mono text-white mb-1 uppercase tracking-wide">${cat.title}</h2><span class="text-xs font-mono text-gray-400 mb-6">${cat.items.length} thành tích / mục</span><button id="btn-back-home" class="px-5 py-2 rounded-full border border-border bg-bg hover:bg-white hover:text-black transition-all text-xs font-mono font-semibold tracking-wider flex items-center gap-2"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>TRỞ VỀ TRANG CHỦ</button>`;document.getElementById('btn-back-home').addEventListener('click',e=>{e.stopPropagation();goHome()})}}
-function renderWheelSegments(){wheelGroup.innerHTML='';const isCategoryLevel=appState.level===0,items=isCategoryLevel?portfolioData.categories:appState.currentCategory.items,count=items.length;if(!count)return;const anglePerSegment=360/count,gap=count>1?1.5:0;textCounter=0;items.forEach((item,index)=>{const startAngle=index*anglePerSegment+gap/2,endAngle=(index+1)*anglePerSegment-gap/2,midAngle=(startAngle+endAngle)/2,g=document.createElementNS('http://www.w3.org/2000/svg','g');g.classList.add('wheel-segment');const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',createDonutArc(startAngle,endAngle));path.setAttribute('fill',isCategoryLevel?item.color:appState.currentCategory.color);path.setAttribute('fill-opacity',isCategoryLevel?'0.85':'0.65');path.setAttribute('stroke','#2a2a2d');path.setAttribute('stroke-width','1.5');
-const textRadius=(R_INNER+R_OUTER)/2;
-    const labelPos=polarToCartesian(CENTER,CENTER,textRadius,midAngle);
-    
-    // Place each label at the segment midpoint and rotate it along the
-    // tangent. Normalize the rotation so every label stays readable.
-    let textRotation=midAngle;
-    if(midAngle>90 && midAngle<270) textRotation+=180;
-    
-    const text=document.createElementNS('http://www.w3.org/2000/svg','text');
-    text.classList.add('item-label');
-    text.setAttribute('x',labelPos.x);
-    text.setAttribute('y',labelPos.y);
-    text.setAttribute('transform',`rotate(${textRotation} ${labelPos.x} ${labelPos.y})`);
-    text.setAttribute('text-anchor','middle');
-    text.setAttribute('dominant-baseline','middle');
-    text.setAttribute('fill','#ffffff');
-    text.setAttribute('font-family','Inter, sans-serif');
-    text.setAttribute('font-weight','600');
-    text.setAttribute('font-size',isCategoryLevel?'14px':'11px');
-    text.setAttribute('letter-spacing',isCategoryLevel?'0.2px':'0px');
-    
-    let titleText=item.title;
-    const maxLength=isCategoryLevel?24:32;
-    if(titleText.length>maxLength) titleText=titleText.substring(0,maxLength-2).trimEnd()+'..';
-    text.textContent=titleText;
-    
-    g.append(path, text);
-                g.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (isCategoryLevel) {
-                        selectCategory(item);
-                    } else {
-                        selectItem(item);
-                    }
-                });
-                wheelGroup.appendChild(g);
-            });
-        }
+<body>
 
-function selectCategory(category){appState.level=1;appState.currentCategory=category;appState.currentItem=null;renderCenterHub();renderWheelSegments();updateLayoutClass()}
-function selectItem(item){appState.level=2;appState.currentItem=item;detailCategoryBadge.textContent=appState.currentCategory.title;detailCategoryBadge.style.color=appState.currentCategory.color;detailItemTitle.textContent=item.title;detailItemMeta.textContent=item.meta;detailImage.classList.add('hidden');detailPdf.classList.add('hidden');detailImageFallback.classList.remove('hidden');detailImage.src='';detailPdf.src='';if(item.image){const media=item.image.trim();if(media.toLowerCase().endsWith('.pdf')){detailPdf.src=media;detailPdf.classList.remove('hidden');detailImageFallback.classList.add('hidden')}else{detailImage.src=media;detailImage.classList.remove('hidden');detailImageFallback.classList.add('hidden')}}detailDescription.innerHTML='';item.desc.forEach(b=>{const li=document.createElement('div');li.className='flex items-start gap-2.5';li.innerHTML=`<span class="text-gray-400 mt-0.5">•</span><span>${b}</span>`;detailDescription.appendChild(li)});updateLayoutClass()}
-function goHome(){appState={level:0,currentCategory:null,currentItem:null};renderCenterHub();renderWheelSegments();updateLayoutClass()}
-function updateLayoutClass(){appViewport.classList.toggle('layout-shifted',appState.level===2);appViewport.classList.toggle('layout-centered',appState.level!==2)}
-btnBackDetail.addEventListener('click',()=>{if(appState.level===2){appState.level=1;appState.currentItem=null;updateLayoutClass()}});
-document.addEventListener('click',e=>{if(appState.level===2&&!e.target.closest('.detail-panel')&&!e.target.closest('.wheel-segment')){appState.level=1;appState.currentItem=null;updateLayoutClass()}});
-window.addEventListener('load',()=>{renderCenterHub();renderWheelSegments();updateLayoutClass()});
-</script></body></html>
+<div class="app" id="app">
+
+  <div class="donut-stage">
+    <div class="donut" id="donut">
+      <div class="donut-ring"></div>
+      <div class="donut-ring-inner"></div>
+
+      <div class="donut-center" id="center">
+        <div class="avatar">LH</div>
+        <div class="name">Le Dao Trung Hieu</div>
+        <div class="role">
+          High school student with a strong academic foundation and a growing passion
+          for physics, electronics, and engineering — aspiring to pursue Electrical
+          and Electronics Engineering and develop technology-driven solutions to
+          real-world challenges.
+        </div>
+        <div class="divider"></div>
+        <div class="contact">
+          Ho Chi Minh City, Vietnam
+          <br/>
+          +84 989 415 751 · trunghieu18122009@gmail.com
+        </div>
+      </div>
+    </div>
+
+    <div class="hint" id="hint">Click a section to explore</div>
+  </div>
+
+  <div class="detail-panel">
+    <button class="detail-close" id="closeBtn">✕</button>
+    <div class="detail-scroll" id="detailScroll"></div>
+  </div>
+
+</div>
+
+<script>
+/* =========================================================
+   DATA — 100% from Hieu's resume (English)
+   ========================================================= */
+const DATA = {
+
+  /* ---------- 1. EDUCATION ---------- */
+  education: {
+    icon: '🎓',
+    label: 'Education',
+    achievements: [
+      {
+        title: 'Nguyen Thuong Hien High School',
+        tag: 'Education',
+        meta: {
+          'Role': 'Student',
+          'Timeline': '2024 — 2027 (Expected)',
+          'Location': 'Ho Chi Minh City, Vietnam'
+        },
+        icon: '🏫',
+        desc: 'Currently attending Nguyen Thuong Hien High School with an outstanding academic record, particularly strong in the natural sciences.',
+        bullets: [
+          'Grade 11 GPA: 9.4/10 (2026)',
+          'Grade 10 GPA: 9.0/10 (2025)',
+          'Aspiring to pursue Electrical and Electronics Engineering'
+        ]
+      },
+      {
+        title: 'Tran Quang Khai Middle School',
+        tag: 'Education',
+        meta: {
+          'Role': 'Student',
+          'Timeline': '2024',
+          'Location': 'Ho Chi Minh City, Vietnam'
+        },
+        icon: '📚',
+        desc: 'Completed middle school at Tran Quang Khai with an impressive academic result, building a solid foundation for high school.',
+        bullets: [
+          'Grade 9 GPA: 9.2/10',
+          'Strong academic foundation in Mathematics and Sciences'
+        ]
+      }
+    ]
+  },
+
+  /* ---------- 2. TEST SCORES ---------- */
+  tests: {
+    icon: '📝',
+    label: 'Test Scores',
+    achievements: [
+      {
+        title: 'IELTS 7.5',
+        tag: 'Standardized Test',
+        meta: {
+          'Overall': '7.5',
+          'Reading': '8.5',
+          'Listening': '8.0',
+          'Writing': '6.5',
+          'Speaking': '6.0'
+        },
+        icon: '🌐',
+        desc: 'IELTS 7.5 demonstrates strong academic English proficiency, particularly in reading and listening — two essential skills for studying and researching international technical materials.',
+        bullets: [
+          'Reading: 8.5 — excellent academic reading comprehension',
+          'Listening: 8.0 — strong listening comprehension',
+          'Writing: 6.5 — solid academic writing',
+          'Speaking: 6.0 — fluent English communication'
+        ]
+      },
+      {
+        title: 'SAT 1460',
+        tag: 'Standardized Test',
+        meta: {
+          'Total': '1460',
+          'Verbal': '680',
+          'Math': '780'
+        },
+        icon: '📊',
+        desc: 'SAT score of 1460 with Math 780 — near perfect — reflecting exceptional mathematical and logical reasoning abilities, well-suited for Electrical and Electronics Engineering.',
+        bullets: [
+          'Math: 780 — outstanding mathematical ability',
+          'Verbal: 680 — strong reading and language skills',
+          'Total 1460 places in a high percentile nationally'
+        ]
+      }
+    ]
+  },
+
+  /* ---------- 3. HONORS & AWARDS ---------- */
+  awards: {
+    icon: '🏆',
+    label: 'Honors & Awards',
+    achievements: [
+      {
+        title: 'IAMO 2026 — Final Round Qualifier',
+        tag: 'Mathematics Olympiad',
+        image: 'images/IAMO.JPG',
+        meta: {
+          'Competition': 'IAMO 2026',
+          'Subject': 'Mathematics',
+          'Result': 'Final Round Qualifier',
+          'Year': '2026'
+        },
+        icon: '📐',
+        desc: 'Qualified for the Final Round of IAMO 2026 in Mathematics after successfully advancing through the preliminary round — demonstrating strong mathematical proficiency, logical reasoning, and problem-solving skills.',
+        bullets: [
+          'Advanced through the IAMO 2026 preliminary round',
+          'Demonstrated strong logical reasoning and problem-solving',
+          'Proven mathematical ability on an international stage'
+        ]
+      },
+      {
+        title: 'IACHO 2026 — Final Round Qualifier',
+        tag: 'Chemistry Olympiad',
+        image: 'images/LOA.png',
+        meta: {
+          'Competition': 'IACHO 2026',
+          'Subject': 'Applied Chemistry',
+          'Result': 'Final Round Qualifier',
+          'Location': 'Bandung, Indonesia',
+          'Dates': 'Sep 24 — 27, 2026'
+        },
+        icon: '⚗️',
+        desc: 'Passed both the Preliminary and Semi-Final Rounds of the International Applied Chemistry Olympiad (IACHO) 2026, and was officially selected for the Final Round to be held in Bandung, Indonesia.',
+        bullets: [
+          'Passed the Preliminary and Semi-Final Rounds of IACHO 2026',
+          'Officially selected for the Final Round',
+          'Final Round in Bandung, Indonesia (Sep 24 — 27, 2026)',
+          'Strong applied chemistry ability at the international level'
+        ]
+      },
+      {
+        title: 'ASMO',
+        tag: 'Olympiad',
+        meta: {
+          'Competition': 'ASMO',
+          'Status': 'To Be Determined'
+        },
+        icon: '🌏',
+        desc: 'Information about the ASMO competition is currently being updated. This is one of the international academic competitions Hieu participates in.',
+        bullets: [
+          'Results to be updated',
+          'Continuing to demonstrate multidisciplinary academic strength'
+        ]
+      }
+    ]
+  },
+
+  /* ---------- 4. LEADERSHIP & COMMUNITY ---------- */
+  community: {
+    icon: '🤝',
+    label: 'Leadership & Community',
+    achievements: [
+      {
+        title: 'Mid-Autumn Festival — Se Dang Community',
+        tag: 'Project Leader',
+        meta: {
+          'Role': 'Project Leader',
+          'Location': 'Pleiku',
+          'Year': '2026',
+          'Scale': '650+ children'
+        },
+        icon: '🏮',
+        desc: 'Led a Mid-Autumn Festival initiative serving more than 650 children in a Se Dang ethnic minority community in Pleiku — coordinating volunteers, budgeting, logistics, meals, gifts, and educational and creative activities.',
+        bullets: [
+          'Led a project serving 650+ Se Dang ethnic minority children',
+          'Coordinated volunteers and managed the budget',
+          'Organized logistics, meals, and gifts',
+          'Designed educational and creative activities for children'
+        ]
+      },
+      {
+        title: 'Ánh Bình Minh Tây Nguyên',
+        tag: 'Project Member',
+        meta: {
+          'Role': 'Project Member',
+          'Scope': 'Regional',
+          'Year': '2026'
+        },
+        icon: '🌅',
+        desc: 'Contributed to an initiative expanding access to educational support for ethnic minority students in the Central Highlands, including Ede and Jarai communities.',
+        bullets: [
+          'Supported education access for ethnic minority students',
+          'Worked with Ede and Jarai communities',
+          'Expanded educational opportunities in the Central Highlands'
+        ]
+      },
+      {
+        title: 'Gia Lai Mobile Clinic',
+        tag: 'Volunteer / Communications',
+        meta: {
+          'Role': 'Volunteer · Communications Support',
+          'Location': 'Pleiku',
+          'Year': '2026'
+        },
+        icon: '🩺',
+        desc: 'Supported online communications and recurring mobile-clinic activities providing healthcare services and community assistance to ethnic minority communities.',
+        bullets: [
+          'Supported online communications for the mobile clinic',
+          'Joined recurring healthcare activities in Gia Lai',
+          'Provided healthcare services to ethnic minority communities'
+        ]
+      },
+      {
+        title: 'Red Flamboyant Campaign',
+        tag: 'Community Service',
+        image: 'images/HPD.jpg',
+        meta: {
+          'Role': 'Participant',
+          'Year': '2026'
+        },
+        icon: '🌺',
+        desc: 'Supported local ward activities, summer programs for children, and community-service and charitable initiatives.',
+        bullets: [
+          'Supported local ward activities',
+          'Joined summer programs for children',
+          'Contributed to community-service and charitable initiatives'
+        ]
+      },
+      {
+        title: 'MAERSK Charity Marathon',
+        tag: 'Community Volunteer',
+        meta: {
+          'Role': 'Participant · Community Volunteer',
+          'Year': '2026'
+        },
+        icon: '🏃',
+        desc: 'Participated in a charity marathon supporting fundraising for community-focused charitable initiatives.',
+        bullets: [
+          'Ran in the MAERSK charity marathon',
+          'Helped raise funds for community initiatives',
+          'Promoted sportsmanship and charitable spirit'
+        ]
+      }
+    ]
+  },
+
+  /* ---------- 5. STEM & RESEARCH ---------- */
+  stem: {
+    icon: '🔬',
+    label: 'STEM & Research',
+    achievements: [
+      {
+        title: 'Personal Project — Student Focus & Attention',
+        tag: 'Founder / Project Lead',
+        meta: {
+          'Role': 'Founder · Project Lead',
+          'Timeline': '2026 — Present',
+          'Type': 'Personal Project'
+        },
+        icon: '🧠',
+        desc: 'Developing an independent project exploring concentration and attention during studying and practical approaches to improve students\' focus and learning effectiveness.',
+        bullets: [
+          'Researching focus and attention during studying',
+          'Proposing methods to improve students\' concentration',
+          'Working independently from research to implementation'
+        ]
+      },
+      {
+        title: 'Samsung Solve for Tomorrow',
+        tag: 'STEM Innovation Program',
+        image: 'images/Solve for tomorrow.JPG',
+        meta: {
+          'Role': 'Participant',
+          'Scope': 'National',
+          'Year': '2026'
+        },
+        icon: '💡',
+        desc: 'Completed a STEM innovation program covering design thinking, AI, IoT, and problem-solving, with a focus on solutions to real-world community challenges.',
+        bullets: [
+          'Completed a national-level STEM innovation program',
+          'Studied design thinking, AI, IoT, and problem-solving',
+          'Developed solutions for real-world community challenges'
+        ]
+      },
+      {
+        title: 'Introduction to Devices — KAIST',
+        tag: 'Course',
+        meta: {
+          'Institution': 'KAIST',
+          'Role': 'Course Participant',
+          'Year': '2026'
+        },
+        icon: '⚙️',
+        desc: 'Studied semiconductor devices, electronic components, and fundamental engineering concepts — directly supporting the Electrical and Electronics Engineering pathway.',
+        bullets: [
+          'Studied semiconductor devices',
+          'Explored electronic components and how they work',
+          'Learned fundamental engineering concepts'
+        ]
+      },
+      {
+        title: 'Introductory Programming Course — Microsoft',
+        tag: 'Course',
+        image: 'images/Microsoft.pdf',
+        meta: {
+          'Institution': 'Microsoft',
+          'Role': 'Course Participant',
+          'Year': '2026'
+        },
+        icon: '💻',
+        desc: 'Studied coding fundamentals, algorithms, problem-solving, and basic software-development concepts.',
+        bullets: [
+          'Learned coding fundamentals',
+          'Studied algorithms and problem-solving',
+          'Explored software development concepts'
+        ]
+      },
+      {
+        title: 'Introductory Data Course — Google',
+        tag: 'Course',
+        image: 'images/Google.pdf',
+        meta: {
+          'Institution': 'Google',
+          'Role': 'Course Participant',
+          'Year': '2026'
+        },
+        icon: '📈',
+        desc: 'Studied fundamental data concepts, data-analysis processes, and basic analytical thinking — a foundation for future AI/data work.',
+        bullets: [
+          'Learned fundamental data concepts',
+          'Studied the data-analysis process',
+          'Developed analytical thinking skills'
+        ]
+      },
+      {
+        title: 'School Water Rocket Competition',
+        tag: 'Team Project',
+        meta: {
+          'Role': 'Team Member',
+          'School': 'Nguyen Thuong Hien High School',
+          'Year': '2025'
+        },
+        icon: '🚀',
+        desc: 'Designed, built, and tested a water rocket, using iterative testing to improve flight performance and target accuracy.',
+        bullets: [
+          'Designed and built a water rocket',
+          'Used iterative testing to improve flight performance',
+          'Improved target accuracy across test runs'
+        ]
+      },
+      {
+        title: 'UNESCO Culture Education Program',
+        tag: 'Program',
+        image: 'images/UNESCO.JPG',
+        meta: {
+          'Role': 'Participant',
+          'Year': '2026'
+        },
+        icon: '🌍',
+        desc: 'Participated in a cultural education program focused on cultural awareness, intercultural understanding, and education.',
+        bullets: [
+          'Improved cultural awareness',
+          'Developed intercultural understanding',
+          'Joined UNESCO educational activities'
+        ]
+      }
+    ]
+  },
+
+  /* ---------- 6. SCHOOL & EXTRACURRICULAR ---------- */
+  activities: {
+    icon: '🎯',
+    label: 'School & Extracurricular',
+    achievements: [
+      {
+        title: 'Lightning Cheerleading Team',
+        tag: 'Team Member',
+        meta: {
+          'Role': 'Team Member',
+          'School': 'Nguyen Thuong Hien High School',
+          'Year': '2025'
+        },
+        icon: '📣',
+        desc: 'Performed at school athletic events and developed teamwork, discipline, and performance skills through team practices and routines.',
+        bullets: [
+          'Performed at school athletic events',
+          'Developed teamwork and discipline',
+          'Built performance skills through rehearsals'
+        ]
+      },
+      {
+        title: 'School Annual Dance Competition',
+        tag: 'Class Representative',
+        meta: {
+          'Role': 'Class Representative · Performer',
+          'Year': '2025'
+        },
+        icon: '💃',
+        desc: 'Represented the class in the annual dance competition and collaborated with teammates to rehearse and perform choreographed routines.',
+        bullets: [
+          'Represented the class in the school dance competition',
+          'Collaborated with teammates on rehearsals',
+          'Performed choreographed routines'
+        ]
+      },
+      {
+        title: 'Annual School Camp — Class Food Stall',
+        tag: 'Team Member',
+        meta: {
+          'Role': 'Team Member',
+          'Year': '2025'
+        },
+        icon: '⛺',
+        desc: 'Helped plan, build, and operate the class food stall during the annual school camp.',
+        bullets: [
+          'Planned the class food stall',
+          'Built and operated the stall during the camp',
+          'Worked as a team in a real-world setting'
+        ]
+      },
+      {
+        title: 'CMD Education Fair',
+        tag: 'Student Leader / Event Support',
+        image: 'images/CMD.png',
+        meta: {
+          'Role': 'Event Support',
+          'Date': 'July 18, 2026',
+          'Award': 'Certificate of Appreciation'
+        },
+        icon: '🎓',
+        desc: 'Supported event organization and coordination for the CMD Education Fair. Received a Certificate of Appreciation for outstanding leadership, dedication, and enthusiasm.',
+        bullets: [
+          'Supported organization and coordination of the education fair',
+          'Received a Certificate of Appreciation',
+          'Recognized for leadership, dedication, and enthusiasm'
+        ]
+      }
+    ]
+  }
+};
+
+/* =========================================================
+   RENDER LOGIC
+   ========================================================= */
+const donut = document.getElementById('donut');
+const center = document.getElementById('center');
+const app = document.getElementById('app');
+const detailScroll = document.getElementById('detailScroll');
+const closeBtn = document.getElementById('closeBtn');
+const hint = document.getElementById('hint');
+
+const SECTIONS = Object.keys(DATA);
+const RADIUS_SECTION = 310;
+const RADIUS_ACH = 210;
+
+let activeSection = null;
+let activeAch = null;
+
+const sectionEls = {};
+let achEls = {};
+
+/* ---------- Render section nodes ---------- */
+function renderSections() {
+  SECTIONS.forEach((key, i) => {
+    const sec = DATA[key];
+    const angle = (i / SECTIONS.length) * Math.PI * 2 - Math.PI / 2;
+    const tx = Math.cos(angle) * RADIUS_SECTION;
+    const ty = Math.sin(angle) * RADIUS_SECTION;
+
+    const el = document.createElement('div');
+    el.className = 'section-node';
+    el.style.setProperty('--tx', tx + 'px');
+    el.style.setProperty('--ty', ty + 'px');
+    el.style.transform = `translate(${tx}px, ${ty}px)`;
+    el.dataset.key = key;
+    el.innerHTML = `
+      <div class="icon">${sec.icon}</div>
+      <div class="label">${sec.label}</div>
+      <div class="count">${sec.achievements.length} items</div>
+    `;
+
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectSection(key);
+    });
+
+    donut.appendChild(el);
+    sectionEls[key] = el;
+  });
+}
+
+/* ---------- Render achievements ---------- */
+function renderAchievements(sectionKey) {
+  const achievements = DATA[sectionKey].achievements;
+  achievements.forEach((ach, i) => {
+    const angle = (i / achievements.length) * Math.PI * 2 - Math.PI / 2;
+    const tx = Math.cos(angle) * RADIUS_ACH;
+    const ty = Math.sin(angle) * RADIUS_ACH;
+
+    const el = document.createElement('div');
+    el.className = 'ach-node';
+    el.style.setProperty('--tx', tx + 'px');
+    el.style.setProperty('--ty', ty + 'px');
+    el.dataset.idx = i;
+    el.textContent = ach.title;
+    el.title = ach.title;
+
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectAchievement(sectionKey, i);
+    });
+
+    donut.appendChild(el);
+    achEls[i] = el;
+
+    setTimeout(() => el.classList.add('visible'), 60 * i);
+  });
+}
+
+function clearAchievements() {
+  document.querySelectorAll('.ach-node').forEach(n => {
+    n.classList.remove('visible');
+    setTimeout(() => n.remove(), 300);
+  });
+  achEls = {};
+}
+
+/* ---------- Section select ---------- */
+function selectSection(key) {
+  if (activeSection === key) { resetAll(); return; }
+
+  clearAchievements();
+  app.classList.remove('detail-open');
+  activeAch = null;
+
+  Object.values(sectionEls).forEach(el => el.classList.remove('active'));
+  activeSection = key;
+  sectionEls[key].classList.add('active');
+
+  const sec = DATA[key];
+  center.innerHTML = `
+    <div class="avatar" style="font-size:30px;">${sec.icon}</div>
+    <div class="name" style="font-size:18px;">${sec.label}</div>
+    <div class="role" style="font-size:11px;max-width:280px;">
+      ${sec.achievements.length} items — click any item to view details
+    </div>
+  `;
+
+  renderAchievements(key);
+  hint.textContent = 'Click an achievement to view details';
+}
+
+/* ---------- Achievement select ---------- */
+function selectAchievement(sectionKey, idx) {
+  const ach = DATA[sectionKey].achievements[idx];
+
+  Object.values(achEls).forEach(el => el.classList.remove('active'));
+  if (achEls[idx]) achEls[idx].classList.add('active');
+
+  activeAch = { sectionKey, idx };
+  app.classList.add('detail-open');
+
+  const metaHTML = Object.entries(ach.meta || {})
+    .map(([k, v]) => `
+      <div class="detail-meta-item">
+        <span class="k">${k}</span>
+        <span class="v">${v}</span>
+      </div>
+    `).join('');
+
+  const bulletsHTML = (ach.bullets || [])
+    .map(b => `<li>${b}</li>`).join('');
+
+  const imageHTML = ach.image
+  ? `<div class="detail-image"><img src="${ach.image}" alt="${ach.title}" /></div>`
+  : `<div class="detail-image"><span>${ach.icon || '🏅'}</span></div>`;
+
+detailScroll.innerHTML = `
+  <div class="detail-tag">${ach.tag || 'Achievement'}</div>
+  <h1 class="detail-title">${ach.title}</h1>
+  <div class="detail-meta">${metaHTML}</div>
+  ${imageHTML}
+  <p class="detail-desc">${ach.desc || ''}</p>
+  ${bulletsHTML ? `<ul class="detail-bullets">${bulletsHTML}</ul>` : ''}
+`;
+
+  detailScroll.scrollTop = 0;
+}
+
+/* ---------- Reset ---------- */
+function resetAll() {
+  clearAchievements();
+  Object.values(sectionEls).forEach(el => el.classList.remove('active'));
+  activeSection = null;
+  activeAch = null;
+  app.classList.remove('detail-open');
+
+  center.innerHTML = `
+    <div class="avatar">LH</div>
+    <div class="name">Le Dao Trung Hieu</div>
+    <div class="role">
+      High school student with a strong academic foundation and a growing passion
+      for physics, electronics, and engineering — aspiring to pursue Electrical
+      and Electronics Engineering and develop technology-driven solutions to
+      real-world challenges.
+    </div>
+    <div class="divider"></div>
+    <div class="contact">
+      Ho Chi Minh City, Vietnam
+      <br/>
+      +84 989 415 751 · trunghieu18122009@gmail.com
+    </div>
+  `;
+
+  hint.textContent = 'Click a section to explore';
+}
+
+closeBtn.addEventListener('click', resetAll);
+
+/* ---------- Init ---------- */
+renderSections();
+</script>
+</body>
+</html>
